@@ -1,0 +1,80 @@
+.App {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: white; /* 设置主背景色为白色 */
+}
+
+.App-header {
+    background-color: #0056b3;
+    color: white;
+    padding: 1rem;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title {
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+}
+
+.nav-button {
+    background-color: white;
+    color: #0056b3;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.nav-button:hover {
+    background-color: #004494;
+    color: white;
+}
+
+.sidebar {
+    width: 200px;
+    background-color: #003366; /* 设置侧栏背景色 */
+    color: white; /* 设置侧栏字体颜色为白色，以保证对比度 */
+    padding: 1rem;
+    border-right: 1px solid #e9ecef;
+    height: calc(100vh - 56px);
+    position: fixed;
+    top: 66px;
+    left: 0;
+    overflow-y: auto;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar nav ul li {
+    margin: 1rem 0;
+    cursor: pointer;
+}
+
+.sidebar nav ul li:hover {
+    color: #ffcc00; /* 设置侧栏菜单项悬停颜色 */
+}
+
+.main-content {
+    margin-left: 220px;
+    padding: 1rem;
+    flex-grow: 1;
+}
+
+.main-content h2 {
+    margin-top: 0;
+}
