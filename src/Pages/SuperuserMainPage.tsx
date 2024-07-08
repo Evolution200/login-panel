@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/SuperuserMain.css'; // 引入你的 CSS 文件
+import '../Style/SuperuserMain.css';
 
 export function SuperuserMainPage() {
     const history = useHistory();
+    const [username, setUsername] = useState('');
+    const [role, setRole] = useState('');
+
+    useEffect(() => {
+        // 从 localStorage 获取用户名和角色
+        const savedUsername = localStorage.getItem('username');
+        const savedRole = localStorage.getItem('role');
+        if (savedUsername) setUsername(savedUsername);
+        if (savedRole) setRole(savedRole);
+    }, []);
+
+    const handleLogout = () => {
+        // 清除 localStorage 中的用户信息
+        localStorage.removeItem('username');
+        localStorage.removeItem('password');
+        localStorage.removeItem('role');
+        // 重定向到登录页面
+        history.push('/');
+    };
 
     return (
         <div className="App">
@@ -11,7 +30,8 @@ export function SuperuserMainPage() {
                 <div className="header-content">
                     <h1 className="header-title">Socratic</h1>
                     <div className="header-nav">
-                        <button className="nav-button" onClick={() => history.push("/")}>Login</button>
+                        <span className="user-role">Current Role: {role}</span>
+                        <button className="nav-button" onClick={handleLogout}>Login</button>
                     </div>
                 </div>
             </header>

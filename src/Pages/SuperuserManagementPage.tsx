@@ -4,7 +4,7 @@ import '../Style/SuperuserManagement.css';
 import { Application, fetchApplications } from '../Common/FetchApplication';
 import { FinishManagerMessage } from 'Plugins/SuperuserAPI/FinishManagerMessage';
 import { SendPostRequest } from '../Common/SendPost';
-import { ReadTasksMessage } from 'Plugins/SuperuserAPI/ReadTaskMessage';
+import { ReadTasksMessage } from 'Plugins/SuperuserAPI/ReadTasksMessage';
 
 
 export function SuperuserManagementPage() {

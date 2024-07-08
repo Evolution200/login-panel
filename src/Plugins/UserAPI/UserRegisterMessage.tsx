@@ -4,7 +4,7 @@ import { UserMessage } from 'Plugins/UserAPI/UserMessage'
 export interface UserRegisterInfo {
     userName: string;
     password: string;
-    surname: string;
+    surName: string;
     lastName: string;
     institute: string;
     expertise: string;

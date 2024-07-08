@@ -31,7 +31,7 @@ export const RegisterPage: React.FC = () => {
                 const userInfo: UserRegisterInfo = {
                     userName: username,
                     password: password,
-                    surname: surname,
+                    surName: surname,
                     lastName: lastName,
                     institute: institute,
                     expertise: expertise,

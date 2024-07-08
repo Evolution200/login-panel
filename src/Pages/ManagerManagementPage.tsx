@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import '../Style/ManagerManagement.css';
 import { Application, fetchApplications } from '../Common/FetchApplication';
 import { FinishEditorMessage } from 'Plugins/ManagerAPI/FinishEditorMessage';
-import { ReadTasksMessage } from 'Plugins/ManagerAPI/ReadTaskMessage'
+import { ReadTasksMessage } from 'Plugins/ManagerAPI/ReadTasksMessage'
 import { SendPostRequest } from '../Common/SendPost';
 
 export function ManagerManagementPage() {

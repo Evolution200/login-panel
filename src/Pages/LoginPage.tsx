@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios, { isAxiosError } from 'axios';
 import { useHistory } from 'react-router-dom';
 import '../Style/Login.css';
 import { API } from 'Plugins/CommonUtils/API'
@@ -21,7 +20,7 @@ export const LoginPage: React.FC = () => {
         const savedUsername = localStorage.getItem('username');
         const savedPassword = localStorage.getItem('password');
         const savedRole = localStorage.getItem('role');
-        if (savedUsername && savedPassword) {
+        if (savedUsername && savedPassword && savedRole) {
             setUsername(savedUsername);
             setPassword(savedPassword);
             setRole(savedRole);
@@ -45,12 +44,12 @@ export const LoginPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setErrorMessage(''); // 清空之前的错误消息
-        const message = getLoginMessage();//获取登录对象的信息
+        setErrorMessage('');
+        const message = getLoginMessage();
         try {
             const response = await SendPostRequest(message);
             if (response && response.status === 200) {
-                if (response.data === "Valid user"){
+                if (response.data === "Valid user") {
                     if (rememberMe) {
                         localStorage.setItem('username', username);
                         localStorage.setItem('password', password);
@@ -60,7 +59,23 @@ export const LoginPage: React.FC = () => {
                         localStorage.removeItem('password');
                         localStorage.removeItem('role');
                     }
-                    history.push('/SuperuserMain');
+                    // 根据用户角色重定向到不同的主页
+                    switch (role) {
+                        case 'superuser':
+                            history.push('/SuperuserMain');
+                            break;
+                        case 'manager':
+                            history.push('/ManagerMain');
+                            break;
+                        case 'editor':
+                            history.push('/EditorMain'); // 需要添加对应的路由
+                            break;
+                        case 'user':
+                            history.push('/UserMain'); // 需要添加对应的路由
+                            break;
+                        default:
+                            history.push('/');
+                    }
                 } else {
                     setErrorMessage('The username or password is incorrect');
                 }
@@ -88,6 +103,7 @@ export const LoginPage: React.FC = () => {
             }
         }
     };
+
 
     return (
         <div className="login-container">

@@ -7,6 +7,8 @@ import { RegisterPage } from 'Pages/RegisterPage';
 import { SuperuserManagementPage } from 'Pages/SuperuserManagementPage';
 import { ManagerMainPage } from 'Pages/ManagerMainPage'
 import { ManagerManagementPage } from 'Pages/ManagerManagementPage';
+import { EditorMainPage } from 'Pages/EditorMainPage'
+import { UserMainPage } from 'Pages/UserMainPage'
 
 const Layout: React.FC = () => {
     return (
@@ -18,6 +20,8 @@ const Layout: React.FC = () => {
                 <Route path="/SuperuserMain/SuperuserManagement" exact component={SuperuserManagementPage} />
                 <Route path="/ManagerMain" exact component={ManagerMainPage} />
                 <Route path="/ManagerMain/ManagerManagement" exact component={ManagerManagementPage} />
+                <Route path="/EditorMain" exact component={EditorMainPage} />
+                <Route path="/UserMain" exact component={UserMainPage} />
             </Switch>
         </HashRouter>
     );
