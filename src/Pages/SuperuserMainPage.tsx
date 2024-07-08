@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-//import '../Style/SuperuserMain.css';
+import '../Style/SuperuserMain.css';
 
 export function SuperuserMainPage() {
     const history = useHistory();
@@ -30,7 +30,7 @@ export function SuperuserMainPage() {
                 <div className="header-content">
                     <h1 className="header-title">Socratic</h1>
                     <div className="header-nav">
-                        <span className="user-role">Current Role: {role}</span>
+                        <span className="user-role">Current Role:</span>
                         <button className="nav-button" onClick={handleLogout}>Login</button>
                     </div>
                 </div>
