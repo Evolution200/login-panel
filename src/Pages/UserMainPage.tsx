@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/UserMain.css'; // 引入你的 CSS 文件
+//import '../Style/UserMain.css'; // 引入你的 CSS 文件
 
 export function UserMainPage() {
     const history = useHistory();

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/EditorMain.css'; // 引入你的 CSS 文件
+//import '../Style/EditorMain.css'; // 引入你的 CSS 文件
 
 export function EditorMainPage() {
     const history = useHistory();

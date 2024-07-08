@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/SuperuserMain.css';
+//import '../Style/SuperuserMain.css';
 
 export function SuperuserMainPage() {
     const history = useHistory();
