@@ -1,9 +1,8 @@
-// RegisterPage.tsx
 import React, { useState } from 'react';
 import { API } from 'Plugins/CommonUtils/API';
 import { ManagerRegisterMessage } from 'Plugins/ManagerAPI/ManagerRegisterMessage';
 import { UserRegisterMessage, UserRegisterInfo } from 'Plugins/UserAPI/UserRegisterMessage';
-import { EditorRegisterMessage } from 'Plugins/EditorAPI/EditorRegisterMessage';
+import { EditorRegisterMessage, EditorRegisterInfo } from 'Plugins/EditorAPI/EditorRegisterMessage';
 import { useHistory } from 'react-router-dom';
 import '../Style/Register.css';
 import { SendPostRequest } from '../Common/SendPost'
@@ -19,6 +18,7 @@ export const RegisterPage: React.FC = () => {
     const [institute, setInstitute] = useState('');
     const [expertise, setExpertise] = useState('');
     const [email, setEmail] = useState('');
+    const [periodical, setPeriodical] = useState('');
     const history = useHistory();
 
     const getRegisterMessage = (): API => {
@@ -26,7 +26,17 @@ export const RegisterPage: React.FC = () => {
             case 'manager':
                 return new ManagerRegisterMessage(username, password);
             case 'editor':
-                return new EditorRegisterMessage(username, password);
+                const editorInfo: EditorRegisterInfo = {
+                    userName: username,
+                    password: password,
+                    surName: surname,
+                    lastName: lastName,
+                    institute: institute,
+                    expertise: expertise,
+                    email: email,
+                    periodical: periodical
+                };
+                return new EditorRegisterMessage(editorInfo);
             case 'user':
                 const userInfo: UserRegisterInfo = {
                     userName: username,
@@ -108,7 +118,7 @@ export const RegisterPage: React.FC = () => {
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                 />
-                {role === 'user' && (
+                {(role === 'user' || role === 'editor') && (
                     <>
                         <label htmlFor="surname">姓：</label>
                         <input
@@ -148,6 +158,18 @@ export const RegisterPage: React.FC = () => {
                             id="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            required
+                        />
+                    </>
+                )}
+                {role === 'editor' && (
+                    <>
+                        <label htmlFor="periodical">期刊：</label>
+                        <input
+                            type="text"
+                            id="periodical"
+                            value={periodical}
+                            onChange={(e) => setPeriodical(e.target.value)}
                             required
                         />
                     </>

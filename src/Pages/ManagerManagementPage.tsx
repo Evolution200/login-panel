@@ -5,15 +5,22 @@ import { Application, fetchApplications } from '../Common/FetchApplication';
 import { FinishEditorMessage } from 'Plugins/ManagerAPI/FinishEditorMessage';
 import { ReadTasksMessage } from 'Plugins/ManagerAPI/ReadTasksMessage'
 import { SendPostRequest } from '../Common/SendPost';
+import { useUserStore } from '../Store/UserStore';
 
 export function ManagerManagementPage() {
     const history = useHistory();
     const [applications, setApplications] = useState<Application[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const { username, role, clearUser } = useUserStore();
 
     useEffect(() => {
         loadApplications();
     }, []);
+
+    const handleLogout = () => {
+        clearUser();
+        history.push('/');
+    };
 
     const loadApplications = async () => {
         try {
@@ -70,14 +77,16 @@ export function ManagerManagementPage() {
                 <div className="header-content">
                     <h1 className="header-title">Socratic</h1>
                     <div className="header-nav">
-                        <button className="nav-button" onClick={() => history.push("/")}>Login</button>
+                        <span className="user-info">Username: {username}</span>
+                        <span className="user-info">Current Role: {role}</span>
+                        <button className="nav-button" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
             </header>
             <aside className="sidebar">
                 <nav>
                     <ul>
-                        <li onClick={() => history.push("/ManagerMain")}>MainPage</li>
+                    <li onClick={() => history.push("/ManagerMain")}>MainPage</li>
                         <li>Authority Editor</li>
                     </ul>
                 </nav>
@@ -86,7 +95,7 @@ export function ManagerManagementPage() {
                 <h2>Editor Applications</h2>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 {applications.length > 0 ? (
-                    <table className="Editor-table">
+                    <table className="manager-table">
                         <thead>
                         <tr>
                             <th>No.</th>

@@ -1,12 +1,21 @@
 import { EditorMessage } from 'Plugins/EditorAPI/EditorMessage'
 
-export class EditorRegisterMessage extends EditorMessage {
+export interface EditorRegisterInfo {
     userName: string;
     password: string;
+    surName: string;
+    lastName: string;
+    institute: string;
+    expertise: string;
+    email: string;
+    periodical: string;
+}
 
-    constructor(userName: string, password: string) {
+export class EditorRegisterMessage extends EditorMessage {
+    editorInfo: EditorRegisterInfo;
+
+    constructor(editorInfo: EditorRegisterInfo) {
         super();
-        this.userName = userName;
-        this.password = password;
+        this.editorInfo = editorInfo;
     }
 }

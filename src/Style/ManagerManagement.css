@@ -3,7 +3,7 @@
     flex-direction: column;
     height: 100vh;
     font-family: Arial, sans-serif;
-    background-color: white; /* 设置主背景色为白色 */
+    background-color: white;
 }
 
 .App-header {
@@ -44,8 +44,8 @@
 
 .sidebar {
     width: 200px;
-    background-color: #003366; /* 设置侧栏背景色 */
-    color: white; /* 设置侧栏字体颜色为白色，以保证对比度 */
+    background-color: #003366;
+    color: white;
     padding: 1rem;
     border-right: 1px solid #e9ecef;
     height: calc(100vh - 56px);
@@ -66,7 +66,7 @@
 }
 
 .sidebar nav ul li:hover {
-    color: #ffcc00; /* 设置侧栏菜单项悬停颜色 */
+    color: #ffcc00;
 }
 
 .main-content {

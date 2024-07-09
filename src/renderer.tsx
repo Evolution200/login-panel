@@ -9,6 +9,8 @@ import { ManagerMainPage } from 'Pages/ManagerMainPage'
 import { ManagerManagementPage } from 'Pages/ManagerManagementPage';
 import { EditorMainPage } from 'Pages/EditorMainPage'
 import { UserMainPage } from 'Pages/UserMainPage'
+import { UserInfoPage} from 'Pages/UserInfoPage'
+import { EditorInfoPage } from 'Pages/EditorInfoPage'
 
 const Layout: React.FC = () => {
     return (
@@ -21,7 +23,9 @@ const Layout: React.FC = () => {
                 <Route path="/ManagerMain" exact component={ManagerMainPage} />
                 <Route path="/ManagerMain/ManagerManagement" exact component={ManagerManagementPage} />
                 <Route path="/EditorMain" exact component={EditorMainPage} />
+                <Route path="/EditorMain/EditorInfo" exact component={EditorInfoPage} />
                 <Route path="/UserMain" exact component={UserMainPage} />
+                <Route path="/UserMain/UserInfo" exact component={UserInfoPage} />
             </Switch>
         </HashRouter>
     );

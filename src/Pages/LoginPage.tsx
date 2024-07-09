@@ -7,6 +7,7 @@ import { EditorLoginMessage } from 'Plugins/EditorAPI/EditorLoginMessage'
 import { SuperuserLoginMessage } from 'Plugins/SuperuserAPI/SuperuserLoginMessage'
 import { ManagerLoginMessage } from 'Plugins/ManagerAPI/ManagerLoginMessage'
 import { SendPostRequest } from '../Common/SendPost'
+import { useUserStore } from '../Store/UserStore';
 
 export const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -15,6 +16,7 @@ export const LoginPage: React.FC = () => {
     const [role, setRole] = useState('user');
     const [errorMessage, setErrorMessage] = useState('');
     const history = useHistory();
+    const setUser = useUserStore(state => state.setUser);
 
     useEffect(() => {
         const savedUsername = localStorage.getItem('username');
@@ -50,6 +52,7 @@ export const LoginPage: React.FC = () => {
             const response = await SendPostRequest(message);
             if (response && response.status === 200) {
                 if (response.data === "Valid user") {
+                    setUser(username, role);
                     if (rememberMe) {
                         localStorage.setItem('username', username);
                         localStorage.setItem('password', password);
@@ -68,10 +71,10 @@ export const LoginPage: React.FC = () => {
                             history.push('/ManagerMain');
                             break;
                         case 'editor':
-                            history.push('/EditorMain'); // 需要添加对应的路由
+                            history.push('/EditorMain');
                             break;
                         case 'user':
-                            history.push('/UserMain'); // 需要添加对应的路由
+                            history.push('/UserMain');
                             break;
                         default:
                             history.push('/');
@@ -103,7 +106,6 @@ export const LoginPage: React.FC = () => {
             }
         }
     };
-
 
     return (
         <div className="login-container">

@@ -5,16 +5,22 @@ import { Application, fetchApplications } from '../Common/FetchApplication';
 import { FinishManagerMessage } from 'Plugins/SuperuserAPI/FinishManagerMessage';
 import { SendPostRequest } from '../Common/SendPost';
 import { ReadTasksMessage } from 'Plugins/SuperuserAPI/ReadTasksMessage';
-
+import { useUserStore } from '../Store/UserStore';
 
 export function SuperuserManagementPage() {
     const history = useHistory();
     const [applications, setApplications] = useState<Application[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
+    const { username, role, clearUser } = useUserStore();
 
     useEffect(() => {
         loadApplications();
     }, []);
+
+    const handleLogout = () => {
+        clearUser();
+        history.push('/');
+    };
 
     const loadApplications = async () => {
         try {
@@ -71,7 +77,9 @@ export function SuperuserManagementPage() {
                 <div className="header-content">
                     <h1 className="header-title">Socratic</h1>
                     <div className="header-nav">
-                        <button className="nav-button" onClick={() => history.push("/")}>Login</button>
+                        <span className="user-info">Username: {username}</span>
+                        <span className="user-info">Current Role: {role}</span>
+                        <button className="nav-button" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
             </header>

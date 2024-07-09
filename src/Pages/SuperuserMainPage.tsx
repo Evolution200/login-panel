@@ -1,26 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import '../Style/SuperuserMain.css';
+import { useUserStore } from '../Store/UserStore';
 
 export function SuperuserMainPage() {
     const history = useHistory();
-    const [username, setUsername] = useState('');
-    const [role, setRole] = useState('');
-
-    useEffect(() => {
-        // 从 localStorage 获取用户名和角色
-        const savedUsername = localStorage.getItem('username');
-        const savedRole = localStorage.getItem('role');
-        if (savedUsername) setUsername(savedUsername);
-        if (savedRole) setRole(savedRole);
-    }, []);
+    const { username, role, clearUser } = useUserStore();
 
     const handleLogout = () => {
-        // 清除 localStorage 中的用户信息
-        localStorage.removeItem('username');
-        localStorage.removeItem('password');
-        localStorage.removeItem('role');
-        // 重定向到登录页面
+        clearUser();
         history.push('/');
     };
 
@@ -30,8 +18,9 @@ export function SuperuserMainPage() {
                 <div className="header-content">
                     <h1 className="header-title">Socratic</h1>
                     <div className="header-nav">
-                        <span className="user-role">Current Role:</span>
-                        <button className="nav-button" onClick={handleLogout}>Login</button>
+                        <span className="user-info">Username: {username}</span>
+                        <span className="user-info">Current Role: {role}</span>
+                        <button className="nav-button" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
             </header>
@@ -44,11 +33,9 @@ export function SuperuserMainPage() {
                 </nav>
             </aside>
             <main className="main-content">
-                <h2>Welcome to the Main Page</h2>
+                <h2>Welcome to the Main Page, {username}!</h2>
                 <p>Use the sidebar to navigate to other pages.</p>
             </main>
         </div>
     );
 }
-
-
