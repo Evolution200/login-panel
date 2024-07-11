@@ -88,6 +88,7 @@ export function ManagerManagementPage() {
                     <ul>
                     <li onClick={() => history.push("/ManagerMain")}>MainPage</li>
                         <li>Authority Editor</li>
+                        <li onClick={() => history.push("/ManagerMain/PeriodicalList")} >Periodical List</li>
                     </ul>
                 </nav>
             </aside>

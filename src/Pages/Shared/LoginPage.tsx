@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import '../../Style/Shared/Login.css';
-import { API } from 'Plugins/CommonUtils/API'
-import { UserLoginMessage } from 'Plugins/UserAPI/UserLoginMessage'
-import { EditorLoginMessage } from 'Plugins/EditorAPI/EditorLoginMessage'
-import { SuperuserLoginMessage } from 'Plugins/SuperuserAPI/SuperuserLoginMessage'
-import { ManagerLoginMessage } from 'Plugins/ManagerAPI/ManagerLoginMessage'
-import { SendPostRequest } from '../../Common/SendPost'
+import { LoginMessage } from 'Plugins/UserManagementAPI/LoginMessage';
+import { SendPostRequest } from '../../Common/SendPost';
 import { useUserStore } from '../../Store/UserStore';
 
 export const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
-    const [role, setRole] = useState('user');
     const [errorMessage, setErrorMessage] = useState('');
     const history = useHistory();
     const setUser = useUserStore(state => state.setUser);
@@ -21,89 +16,56 @@ export const LoginPage: React.FC = () => {
     useEffect(() => {
         const savedUsername = localStorage.getItem('username');
         const savedPassword = localStorage.getItem('password');
-        const savedRole = localStorage.getItem('role');
-        if (savedUsername && savedPassword && savedRole) {
+        if (savedUsername && savedPassword) {
             setUsername(savedUsername);
             setPassword(savedPassword);
-            setRole(savedRole);
             setRememberMe(true);
         }
     }, []);
 
-    const getLoginMessage = (): API => {
-        switch (role) {
-            case 'superuser':
-                return new SuperuserLoginMessage(username, password);
-            case 'manager':
-                return new ManagerLoginMessage(username, password);
-            case 'editor':
-                return new EditorLoginMessage(username, password);
-            case 'user':
-            default:
-                return new UserLoginMessage(username, password);
-        }
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setErrorMessage('');
-        const message = getLoginMessage();
+        const message = new LoginMessage(username, password);
         try {
             const response = await SendPostRequest(message);
             if (response && response.status === 200) {
-                if (response.data === "Valid user") {
-                    setUser(username, role);
-                    if (rememberMe) {
-                        localStorage.setItem('username', username);
-                        localStorage.setItem('password', password);
-                        localStorage.setItem('role', role);
-                    } else {
-                        localStorage.removeItem('username');
-                        localStorage.removeItem('password');
-                        localStorage.removeItem('role');
-                    }
-                    // 根据用户角色重定向到不同的主页
-                    switch (role) {
-                        case 'superuser':
-                            history.push('/SuperuserMain');
-                            break;
-                        case 'manager':
-                            history.push('/ManagerMain');
-                            break;
-                        case 'editor':
-                            history.push('/EditorMain');
-                            break;
-                        case 'user':
-                            history.push('/UserMain');
-                            break;
-                        default:
-                            history.push('/');
-                    }
+                const userRole = response.data; // 后端返回的用户角色
+                setUser(username, userRole);
+                if (rememberMe) {
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('password', password);
                 } else {
-                    setErrorMessage('The username or password is incorrect');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('password');
                 }
+                // 根据用户角色重定向到不同的主页
+                switch (userRole) {
+                    case 'superuser':
+                        history.push('/SuperuserMain');
+                        break;
+                    case 'manager':
+                        history.push('/ManagerMain');
+                        break;
+                    case 'editor':
+                        history.push('/EditorMain');
+                        break;
+                    case 'user':
+                        history.push('/UserMain');
+                        break;
+                    default:
+                        history.push('/');
+                }
+            } else if (response.data === "Invalid user") {
+                setErrorMessage('Invalid username');
+            } else if (response.data === "Wrong password") {
+                setErrorMessage('Incorrect password');
             } else {
                 setErrorMessage('Unexpected error occurred');
             }
         } catch (error) {
             console.error('Login error:', error);
-            if (error.response) {
-                if (error.response.status === 400) {
-                    if (error.response.data && error.response.data.includes("操作符不存在: text = boolean")) {
-                        setErrorMessage('您申请的账户还在审批中，请耐心等待');
-                    } else {
-                        setErrorMessage('Invalid username or password');
-                    }
-                } else if (error.response.status === 500) {
-                    setErrorMessage('Server error. Please try again later.');
-                } else {
-                    setErrorMessage('An unexpected error occurred. Please try again.');
-                }
-            } else if (error.request) {
-                setErrorMessage('No response from server. Please check your network connection.');
-            } else {
-                setErrorMessage('An error occurred while sending the request.');
-            }
+            setErrorMessage('An error occurred. Please try again later.');
         }
     };
 
@@ -111,19 +73,7 @@ export const LoginPage: React.FC = () => {
         <div className="login-container">
             <h2>Login</h2>
             <form onSubmit={handleSubmit}>
-                <label htmlFor="role">登录身份：</label>
-                <select
-                    id="role"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                    required
-                >
-                    <option value="superuser">Superuser</option>
-                    <option value="manager">Manager</option>
-                    <option value="editor">Editor</option>
-                    <option value="user">User</option>
-                </select>
-                <label htmlFor="username">username：</label>
+                <label htmlFor="username">Username：</label>
                 <input
                     type="text"
                     id="username"
@@ -131,7 +81,7 @@ export const LoginPage: React.FC = () => {
                     onChange={(e) => setUsername(e.target.value)}
                     required
                 />
-                <label htmlFor="password">密码：</label>
+                <label htmlFor="password">Password：</label>
                 <input
                     type="password"
                     id="password"
@@ -146,11 +96,11 @@ export const LoginPage: React.FC = () => {
                         checked={rememberMe}
                         onChange={(e) => setRememberMe(e.target.checked)}
                     />
-                    <label htmlFor="rememberMe">记住密码</label>
+                    <label htmlFor="rememberMe">Remember me</label>
                 </div>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
-                <button type="submit">登录</button>
-                <button type="button" onClick={() => history.push('/Register')}>注册</button>
+                <button type="submit">Login</button>
+                <button type="button" onClick={() => history.push('/Register')}>Register</button>
             </form>
         </div>
     );

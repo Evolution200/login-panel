@@ -77,7 +77,6 @@ export function SuperuserManagementPage() {
                 <div className="header-content">
                     <h1 className="header-title">Socratic</h1>
                     <div className="header-nav">
-                        <span className="user-info">Username: {username}</span>
                         <span className="user-info">Current Role: {role}</span>
                         <button className="nav-button" onClick={handleLogout}>Logout</button>
                     </div>

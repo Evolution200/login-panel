@@ -8,7 +8,7 @@ import { SendPostRequest } from '../../Common/SendPost';
 
 export function PeriodicalList() {
     const history = useHistory();
-    const { username, clearUser } = useUserStore();
+    const { username, role, clearUser } = useUserStore();
     const { periodicals, error, loading, fetchPeriodicals, fetchEditors, setError } = usePeriodicalStore();
     const [newPeriodicalName, setNewPeriodicalName] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -58,6 +58,7 @@ export function PeriodicalList() {
                     <h1 className="header-title">Socratic</h1>
                     <div className="header-nav">
                         <span className="user-info">Username: {username}</span>
+                        <span className="user-info">Current Role: {role}</span>
                         <button className="nav-button" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
