@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { API } from 'Plugins/CommonUtils/API';
 import { ManagerRegisterMessage } from 'Plugins/ManagerAPI/ManagerRegisterMessage';
 import { UserRegisterMessage, UserRegisterInfo } from 'Plugins/UserAPI/UserRegisterMessage';
 import { EditorRegisterMessage, EditorRegisterInfo } from 'Plugins/EditorAPI/EditorRegisterMessage';
+import { ReadPeriodicalsMessage } from 'Plugins/ManagerAPI/ReadPeriodicalsMessage';
 import { useHistory } from 'react-router-dom';
-import '../Style/Register.css';
-import { SendPostRequest } from '../Common/SendPost'
+import '../../Style/Shared/Register.css';
+import { SendPostRequest } from '../../Common/SendPost'
+import { fetchApplications } from '../../Common/FetchApplication'
 
 export const RegisterPage: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -19,7 +21,38 @@ export const RegisterPage: React.FC = () => {
     const [expertise, setExpertise] = useState('');
     const [email, setEmail] = useState('');
     const [periodical, setPeriodical] = useState('');
+    const [periodicals, setPeriodicals] = useState<string[]>([]);
     const history = useHistory();
+
+    useEffect(() => {
+        if (role === 'editor') {
+            fetchPeriodicals();
+        }
+    }, [role]);
+
+    const fetchPeriodicals = async () => {
+        try {
+            const message = new ReadPeriodicalsMessage();
+            const response = await SendPostRequest(message);
+            if (response && response.data) {
+                // 解析 JSON 字符串
+                const periodicalsData = JSON.parse(response.data);
+                if (Array.isArray(periodicalsData)) {
+                    // 提取 periodical 字段
+                    const periodicalsList = periodicalsData.map(item => item.periodical);
+                    setPeriodicals(periodicalsList);
+                    if (periodicalsList.length > 0) {
+                        setPeriodical(periodicalsList[0]); // 设置第一个期刊为默认值
+                    }
+                } else {
+                    throw new Error('Unexpected data format');
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch periodicals:', error);
+            setErrorMessage('Failed to load periodicals. Please try again.');
+        }
+    };
 
     const getRegisterMessage = (): API => {
         switch (role) {
@@ -120,7 +153,7 @@ export const RegisterPage: React.FC = () => {
                 />
                 {(role === 'user' || role === 'editor') && (
                     <>
-                        <label htmlFor="surname">姓：</label>
+                        <label htmlFor="surname">名：</label>
                         <input
                             type="text"
                             id="surname"
@@ -128,7 +161,7 @@ export const RegisterPage: React.FC = () => {
                             onChange={(e) => setSurname(e.target.value)}
                             required
                         />
-                        <label htmlFor="lastName">名：</label>
+                        <label htmlFor="lastName">姓：</label>
                         <input
                             type="text"
                             id="lastName"
@@ -165,13 +198,16 @@ export const RegisterPage: React.FC = () => {
                 {role === 'editor' && (
                     <>
                         <label htmlFor="periodical">期刊：</label>
-                        <input
-                            type="text"
+                        <select
                             id="periodical"
                             value={periodical}
                             onChange={(e) => setPeriodical(e.target.value)}
                             required
-                        />
+                        >
+                            {periodicals.map((p, index) => (
+                                <option key={index} value={p}>{p}</option>
+                            ))}
+                        </select>
                     </>
                 )}
                 {errorMessage && <p className="error-message">{errorMessage}</p>}

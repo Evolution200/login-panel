@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/ManagerMain.css';
-import { useUserStore } from '../Store/UserStore';
+import '../../Style/Manager/ManagerMain.css';
+import { useUserStore } from '../../Store/UserStore';
 
 export function ManagerMainPage() {
     const history = useHistory();
@@ -29,6 +29,7 @@ export function ManagerMainPage() {
                     <ul>
                     <li>MainPage</li>
                         <li onClick={() => history.push("/ManagerMain/ManagerManagement")}>Authority Management</li>
+                        <li onClick={() => history.push("/ManagerMain/PeriodicalList")}>Periodical List</li>
                     </ul>
                 </nav>
             </aside>

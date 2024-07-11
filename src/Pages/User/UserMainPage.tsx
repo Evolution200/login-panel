@@ -1,9 +1,9 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/EditorMain.css';
-import { useUserStore } from '../Store/UserStore';
+import '../../Style/User/UserMain.css';
+import { useUserStore } from '../../Store/UserStore';
 
-export function EditorMainPage() {
+export function UserMainPage() {
     const history = useHistory();
     const { username, role, clearUser } = useUserStore();
 
@@ -27,7 +27,8 @@ export function EditorMainPage() {
                 <nav>
                     <ul>
                         <li>MainPage</li>
-                        <li onClick={() => history.push("/EditorMain/EditorInfo")}>Editor Information</li>
+                        <li onClick={() => history.push("/UserMain/SubmitArticle")}>Submit articles</li>
+                        <li onClick={()=> history.push("/UserMain/UserInfo")}>Personal Information</li>
                     </ul>
                 </nav>
             </aside>
@@ -38,3 +39,5 @@ export function EditorMainPage() {
         </div>
     );
 }
+
+

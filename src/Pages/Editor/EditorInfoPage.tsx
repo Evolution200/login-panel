@@ -1,38 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/UserInfo.css';
-import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
-import { SendPostRequest } from '../Common/SendPost';
-import { useUserStore } from '../Store/UserStore';
+import '../../Style/Editor/EditorInfo.css';
+import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
+import { SendPostRequest } from '../../Common/SendPost';
+import { useUserStore } from '../../Store/UserStore';
 
-interface UserInfoData {
+interface EditorInfoData {
     user_name: string;
     sur_name: string;
     last_name: string;
     institute: string;
     expertise: string;
     email: string;
+    periodical: string;
 }
 
-const userProperties: (keyof UserInfoData)[] = ['user_name', 'sur_name', 'last_name', 'institute', 'expertise', 'email'];
+const editorProperties: (keyof EditorInfoData)[] = ['user_name', 'sur_name', 'last_name', 'institute', 'expertise', 'email', 'periodical'];
 
-const propertyDisplayNames: Record<keyof UserInfoData, string> = {
+const propertyDisplayNames: Record<keyof EditorInfoData, string> = {
     user_name: 'Username',
-    sur_name: 'First name',
+    sur_name: 'First Name',
     last_name: 'Last Name',
     institute: 'Institute',
     expertise: 'Expertise',
-    email: 'Email'
+    email: 'Email',
+    periodical: 'Periodical'
 };
 
-export function UserInfoPage() {
+export function EditorInfoPage() {
     const history = useHistory();
     const { username, clearUser } = useUserStore();
-    const [userInfo, setUserInfo] = useState<Partial<UserInfoData>>({});
+    const [editorInfo, setEditorInfo] = useState<Partial<EditorInfoData>>({});
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
-        loadUserInfo();
+        loadEditorInfo();
     }, []);
 
     const handleLogout = () => {
@@ -40,25 +42,25 @@ export function UserInfoPage() {
         history.push('/');
     };
 
-    const loadUserInfo = async () => {
+    const loadEditorInfo = async () => {
         try {
-            const infoPromises = userProperties.map(property =>
-                SendPostRequest(new UserReadInfoMessage(username, property))
+            const infoPromises = editorProperties.map(property =>
+                SendPostRequest(new EditorReadInfoMessage(username, property))
             );
             const results = await Promise.all(infoPromises);
 
-            const newUserInfo: Partial<UserInfoData> = {};
+            const newEditorInfo: Partial<EditorInfoData> = {};
             results.forEach((result, index) => {
                 if (result && result.data) {
-                    newUserInfo[userProperties[index]] = result.data;
+                    newEditorInfo[editorProperties[index]] = result.data;
                 }
             });
 
-            setUserInfo(newUserInfo);
+            setEditorInfo(newEditorInfo);
             setErrorMessage('');
         } catch (error) {
-            console.error('Failed to load user info:', error);
-            setErrorMessage('Failed to load user information. Please try again later.');
+            console.error('Failed to load editor info:', error);
+            setErrorMessage('Failed to load editor information. Please try again later.');
         }
     };
 
@@ -76,27 +78,27 @@ export function UserInfoPage() {
             <aside className="sidebar">
                 <nav>
                     <ul>
-                        <li onClick={() => history.push("/UserMain")}>MainPage</li>
-                        <li>User Information</li>
+                        <li onClick={() => history.push("/EditorMain")}>MainPage</li>
+                        <li>Editor Information</li>
                     </ul>
                 </nav>
             </aside>
             <main className="main-content">
-                <h2>User Information</h2>
+                <h2>Editor Information</h2>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
-                {Object.keys(userInfo).length > 0 ? (
-                    <table className="user-info-table">
+                {Object.keys(editorInfo).length > 0 ? (
+                    <table className="editor-info-table">
                         <tbody>
-                        {userProperties.map(prop => (
+                        {editorProperties.map(prop => (
                             <tr key={prop}>
                                 <th>{propertyDisplayNames[prop]}</th>
-                                <td>{userInfo[prop] || 'N/A'}</td>
+                                <td>{editorInfo[prop] || 'N/A'}</td>
                             </tr>
                         ))}
                         </tbody>
                     </table>
                 ) : (
-                    <p>Loading user information...</p>
+                    <p>Loading editor information...</p>
                 )}
             </main>
         </div>

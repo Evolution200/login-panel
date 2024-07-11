@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/Login.css';
+import '../../Style/Shared/Login.css';
 import { API } from 'Plugins/CommonUtils/API'
 import { UserLoginMessage } from 'Plugins/UserAPI/UserLoginMessage'
 import { EditorLoginMessage } from 'Plugins/EditorAPI/EditorLoginMessage'
 import { SuperuserLoginMessage } from 'Plugins/SuperuserAPI/SuperuserLoginMessage'
 import { ManagerLoginMessage } from 'Plugins/ManagerAPI/ManagerLoginMessage'
-import { SendPostRequest } from '../Common/SendPost'
-import { useUserStore } from '../Store/UserStore';
+import { SendPostRequest } from '../../Common/SendPost'
+import { useUserStore } from '../../Store/UserStore';
 
 export const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');

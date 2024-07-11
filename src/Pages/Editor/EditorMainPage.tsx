@@ -1,9 +1,9 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/SuperuserMain.css';
-import { useUserStore } from '../Store/UserStore';
+import '../../Style/Editor/EditorMain.css';
+import { useUserStore } from '../../Store/UserStore';
 
-export function SuperuserMainPage() {
+export function EditorMainPage() {
     const history = useHistory();
     const { username, role, clearUser } = useUserStore();
 
@@ -19,7 +19,6 @@ export function SuperuserMainPage() {
                     <h1 className="header-title">Socratic</h1>
                     <div className="header-nav">
                         <span className="user-info">Username: {username}</span>
-                        <span className="user-info">Current Role: {role}</span>
                         <button className="nav-button" onClick={handleLogout}>Logout</button>
                     </div>
                 </div>
@@ -28,7 +27,7 @@ export function SuperuserMainPage() {
                 <nav>
                     <ul>
                         <li>MainPage</li>
-                        <li onClick={() => history.push("/SuperuserMain/SuperuserManagement")}>Authority Management</li>
+                        <li onClick={() => history.push("/EditorMain/EditorInfo")}>Editor Information</li>
                     </ul>
                 </nav>
             </aside>

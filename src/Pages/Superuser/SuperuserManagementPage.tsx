@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/ManagerManagement.css';
-import { Application, fetchApplications } from '../Common/FetchApplication';
-import { FinishEditorMessage } from 'Plugins/ManagerAPI/FinishEditorMessage';
-import { ReadTasksMessage } from 'Plugins/ManagerAPI/ReadTasksMessage'
-import { SendPostRequest } from '../Common/SendPost';
-import { useUserStore } from '../Store/UserStore';
+import '../../Style/Superuser/SuperuserManagement.css';
+import { Application, fetchApplications } from '../../Common/FetchApplication';
+import { FinishManagerMessage } from 'Plugins/SuperuserAPI/FinishManagerMessage';
+import { SendPostRequest } from '../../Common/SendPost';
+import { ReadTasksMessage } from 'Plugins/SuperuserAPI/ReadTasksMessage';
+import { useUserStore } from '../../Store/UserStore';
 
-export function ManagerManagementPage() {
+export function SuperuserManagementPage() {
     const history = useHistory();
     const [applications, setApplications] = useState<Application[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
@@ -34,8 +34,8 @@ export function ManagerManagementPage() {
         }
     };
 
-    const sendFinishEditorMessage = async (userName: string, allowed: boolean) => {
-        const message = new FinishEditorMessage(userName, allowed);
+    const sendFinishManagerMessage = async (userName: string, allowed: boolean) => {
+        const message = new FinishManagerMessage(userName, allowed);
         try {
             const response = await SendPostRequest(message);
             if (response && response.data) {
@@ -44,14 +44,14 @@ export function ManagerManagementPage() {
                 throw new Error('No data received');
             }
         } catch (error) {
-            console.error('Failed to send FinishEditorMessage:', error);
+            console.error('Failed to send FinishManagerMessage:', error);
             throw error;
         }
     };
 
     const handleApprove = async (userName: string) => {
         try {
-            await sendFinishEditorMessage(userName, true);
+            await sendFinishManagerMessage(userName, true);
             setErrorMessage('');
             await loadApplications(); // 重新加载应用列表
         } catch (error) {
@@ -62,7 +62,7 @@ export function ManagerManagementPage() {
 
     const handleReject = async (userName: string) => {
         try {
-            await sendFinishEditorMessage(userName, false);
+            await sendFinishManagerMessage(userName, false);
             setErrorMessage('');
             await loadApplications(); // 重新加载应用列表
         } catch (error) {
@@ -86,13 +86,13 @@ export function ManagerManagementPage() {
             <aside className="sidebar">
                 <nav>
                     <ul>
-                    <li onClick={() => history.push("/ManagerMain")}>MainPage</li>
-                        <li>Authority Editor</li>
+                        <li onClick={() => history.push("/SuperuserMain")}>MainPage</li>
+                        <li>Authority Management</li>
                     </ul>
                 </nav>
             </aside>
             <main className="main-content">
-                <h2>Editor Applications</h2>
+                <h2>Manager Applications</h2>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 {applications.length > 0 ? (
                     <table className="manager-table">

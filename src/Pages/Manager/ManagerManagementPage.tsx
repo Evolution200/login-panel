@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import '../Style/SuperuserManagement.css';
-import { Application, fetchApplications } from '../Common/FetchApplication';
-import { FinishManagerMessage } from 'Plugins/SuperuserAPI/FinishManagerMessage';
-import { SendPostRequest } from '../Common/SendPost';
-import { ReadTasksMessage } from 'Plugins/SuperuserAPI/ReadTasksMessage';
-import { useUserStore } from '../Store/UserStore';
+import '../../Style/Manager/ManagerManagement.css';
+import { Application, fetchApplications } from '../../Common/FetchApplication';
+import { FinishEditorMessage } from 'Plugins/ManagerAPI/FinishEditorMessage';
+import { ReadTasksMessage } from 'Plugins/ManagerAPI/ReadTasksMessage'
+import { SendPostRequest } from '../../Common/SendPost';
+import { useUserStore } from '../../Store/UserStore';
 
-export function SuperuserManagementPage() {
+export function ManagerManagementPage() {
     const history = useHistory();
     const [applications, setApplications] = useState<Application[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
@@ -34,8 +34,8 @@ export function SuperuserManagementPage() {
         }
     };
 
-    const sendFinishManagerMessage = async (userName: string, allowed: boolean) => {
-        const message = new FinishManagerMessage(userName, allowed);
+    const sendFinishEditorMessage = async (userName: string, allowed: boolean) => {
+        const message = new FinishEditorMessage(userName, allowed);
         try {
             const response = await SendPostRequest(message);
             if (response && response.data) {
@@ -44,14 +44,14 @@ export function SuperuserManagementPage() {
                 throw new Error('No data received');
             }
         } catch (error) {
-            console.error('Failed to send FinishManagerMessage:', error);
+            console.error('Failed to send FinishEditorMessage:', error);
             throw error;
         }
     };
 
     const handleApprove = async (userName: string) => {
         try {
-            await sendFinishManagerMessage(userName, true);
+            await sendFinishEditorMessage(userName, true);
             setErrorMessage('');
             await loadApplications(); // 重新加载应用列表
         } catch (error) {
@@ -62,7 +62,7 @@ export function SuperuserManagementPage() {
 
     const handleReject = async (userName: string) => {
         try {
-            await sendFinishManagerMessage(userName, false);
+            await sendFinishEditorMessage(userName, false);
             setErrorMessage('');
             await loadApplications(); // 重新加载应用列表
         } catch (error) {
@@ -86,13 +86,13 @@ export function SuperuserManagementPage() {
             <aside className="sidebar">
                 <nav>
                     <ul>
-                        <li onClick={() => history.push("/SuperuserMain")}>MainPage</li>
-                        <li>Authority Management</li>
+                    <li onClick={() => history.push("/ManagerMain")}>MainPage</li>
+                        <li>Authority Editor</li>
                     </ul>
                 </nav>
             </aside>
             <main className="main-content">
-                <h2>Manager Applications</h2>
+                <h2>Editor Applications</h2>
                 {errorMessage && <p className="error-message">{errorMessage}</p>}
                 {applications.length > 0 ? (
                     <table className="manager-table">
