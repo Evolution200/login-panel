@@ -11,7 +11,7 @@ export function SuperuserManagementPage() {
     const history = useHistory();
     const [applications, setApplications] = useState<Application[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
-    const { username, role, clearUser } = useUserStore();
+    const {role, clearUser } = useUserStore();
 
     useEffect(() => {
         loadApplications();

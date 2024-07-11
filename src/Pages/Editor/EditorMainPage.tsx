@@ -5,7 +5,7 @@ import { useUserStore } from '../../Store/UserStore';
 
 export function EditorMainPage() {
     const history = useHistory();
-    const { username, role, clearUser } = useUserStore();
+    const { username,clearUser } = useUserStore();
 
     const handleLogout = () => {
         clearUser();
