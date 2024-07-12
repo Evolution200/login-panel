@@ -1,53 +1,61 @@
+body {
+    background-color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
 .register-container {
-    width: 300px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 10px;
+    width: 400px;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .register-container h2 {
+    color: #0056b3;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 2rem;
 }
 
 .register-container label {
     display: block;
-    margin-bottom: 8px;
+    color: #0056b3;
+    margin-bottom: 0.5rem;
 }
 
 .register-container input[type="text"],
 .register-container input[type="password"],
+.register-container input[type="email"],
 .register-container select {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #0056b3;
+    border-radius: 3px;
 }
 
 .register-container button {
     width: 100%;
-    padding: 10px;
+    padding: 0.75rem;
     border: none;
-    border-radius: 5px;
-    background-color: #4CAF50;
-    color: #fff;
-    font-size: 16px;
+    border-radius: 3px;
+    background-color: #0056b3;
+    color: white;
+    font-size: 1rem;
     cursor: pointer;
-    margin-bottom: 10px;
-}
-
-.register-container button[type="button"] {
-    background-color: #008CBA;
+    margin-bottom: 1rem;
 }
 
 .register-container button:hover {
-    background-color: #45a049;
+    background-color: #004494;
 }
 
-.register-container button[type="button"]:hover {
-    background-color: #005f6b;
+.error-message {
+    color: red;
+    text-align: center;
+    margin-bottom: 1rem;
 }
