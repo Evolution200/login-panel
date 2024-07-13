@@ -3,9 +3,9 @@ import { API } from 'Plugins/CommonUtils/API';
 import { ManagerRegisterMessage } from 'Plugins/ManagerAPI/ManagerRegisterMessage';
 import { UserRegisterMessage, UserRegisterInfo } from 'Plugins/UserAPI/UserRegisterMessage';
 import { EditorRegisterMessage, EditorRegisterInfo } from 'Plugins/EditorAPI/EditorRegisterMessage';
-import { ReadPeriodicalsMessage } from 'Plugins/ManagerAPI/ReadPeriodicalsMessage';
 import { useHistory } from 'react-router-dom';
 import { SendPostRequest } from '../../Common/SendPost';
+import { FetchPeriodicals } from '../../Common/FetchPeriodicals';
 
 export const RegisterPage: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -25,28 +25,18 @@ export const RegisterPage: React.FC = () => {
 
     useEffect(() => {
         if (role === 'editor') {
-            fetchPeriodicals();
+            loadPeriodicals();
         }
     }, [role]);
 
-    const fetchPeriodicals = async () => {
+    const loadPeriodicals = async () => {
         try {
-            const message = new ReadPeriodicalsMessage();
-            const response = await SendPostRequest(message);
-            if (response && response.data) {
-                const periodicalsData = JSON.parse(response.data);
-                if (Array.isArray(periodicalsData)) {
-                    const periodicalsList = periodicalsData.map(item => item.periodical);
-                    setPeriodicals(periodicalsList);
-                    if (periodicalsList.length > 0) {
-                        setPeriodical(periodicalsList[0]);
-                    }
-                } else {
-                    throw new Error('Unexpected data format');
-                }
+            const periodicalsList = await FetchPeriodicals();
+            setPeriodicals(periodicalsList);
+            if (periodicalsList.length > 0) {
+                setPeriodical(periodicalsList[0]);
             }
         } catch (error) {
-            console.error('Failed to fetch periodicals:', error);
             setErrorMessage('Failed to load periodicals. Please try again.');
         }
     };
