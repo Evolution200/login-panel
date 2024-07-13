@@ -2,8 +2,8 @@
     "compilerOptions": {
         "experimentalDecorators": true,
         "allowJs": true,
-        "target": "esnext",
-        "module": "commonjs",
+        "target": "es5",
+        "module": "esnext",
         "skipLibCheck": true,
         "esModuleInterop": true,
         "noImplicitAny": true,
@@ -21,7 +21,7 @@
             "Styles/*": ["Styles/*"],
             "Utils/*": ["Utils/*"]
         },
-        "jsx": "react"
+        "jsx": "react-jsx"
     },
     "include": ["src/**/*", "src/declaration.d.ts"]
 }

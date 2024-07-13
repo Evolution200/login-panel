@@ -3,14 +3,29 @@ const plugins = require('./webpack.plugins')
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
 
-rules.push({
-    test: /\.css$/,
-    use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
-})
-
 module.exports = {
     module: {
-        rules,
+        rules: [
+            {
+                test: /\.tsx?$/,
+                exclude: /(node_modules|\.webpack)/,
+                use: {
+                    loader: 'ts-loader',
+                    options: {
+                        transpileOnly: true
+                    }
+                }
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'postcss-loader',
+                ],
+            },
+            ...rules
+        ],
     },
 
     optimization: {

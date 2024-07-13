@@ -12,6 +12,7 @@ import { UserMainPage } from 'Pages/User/UserMainPage'
 import { UserInfoPage} from 'Pages/User/UserInfoPage'
 import { EditorInfoPage } from 'Pages/Editor/EditorInfoPage'
 import { PeriodicalList } from 'Pages/Manager/PeriodicalList'
+import './index.css';
 
 const Layout: React.FC = () => {
     return (
