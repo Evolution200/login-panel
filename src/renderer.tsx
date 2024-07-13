@@ -12,6 +12,7 @@ import { UserMainPage } from 'Pages/User/UserMainPage'
 import { UserInfoPage} from 'Pages/User/UserInfoPage'
 import { EditorInfoPage } from 'Pages/Editor/EditorInfoPage'
 import { PeriodicalList } from 'Pages/Manager/PeriodicalList'
+import { UserSubmitArticle} from 'Pages/User/UserSubmitArticle'
 import './index.css';
 
 const Layout: React.FC = () => {
@@ -29,6 +30,7 @@ const Layout: React.FC = () => {
                 <Route path="/EditorMain/EditorInfo" exact component={EditorInfoPage} />
                 <Route path="/UserMain" exact component={UserMainPage} />
                 <Route path="/UserMain/UserInfo" exact component={UserInfoPage} />
+                <Route path="/UserMain/UserSubmitArticle" exact component={UserSubmitArticle} />
             </Switch>
         </HashRouter>
     );

@@ -5,15 +5,13 @@ import { UserRegisterMessage, UserRegisterInfo } from 'Plugins/UserAPI/UserRegis
 import { EditorRegisterMessage, EditorRegisterInfo } from 'Plugins/EditorAPI/EditorRegisterMessage';
 import { ReadPeriodicalsMessage } from 'Plugins/ManagerAPI/ReadPeriodicalsMessage';
 import { useHistory } from 'react-router-dom';
-import '../../Style/Shared/Register.css';
-import { SendPostRequest } from '../../Common/SendPost'
-import { fetchApplications } from '../../Common/FetchApplication'
+import { SendPostRequest } from '../../Common/SendPost';
 
 export const RegisterPage: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [role, setRole] = useState('user');
+    const [role, setRole] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [surname, setSurname] = useState('');
     const [lastName, setLastName] = useState('');
@@ -22,6 +20,7 @@ export const RegisterPage: React.FC = () => {
     const [email, setEmail] = useState('');
     const [periodical, setPeriodical] = useState('');
     const [periodicals, setPeriodicals] = useState<string[]>([]);
+    const [isOpen, setIsOpen] = useState(false);
     const history = useHistory();
 
     useEffect(() => {
@@ -35,14 +34,12 @@ export const RegisterPage: React.FC = () => {
             const message = new ReadPeriodicalsMessage();
             const response = await SendPostRequest(message);
             if (response && response.data) {
-                // 解析 JSON 字符串
                 const periodicalsData = JSON.parse(response.data);
                 if (Array.isArray(periodicalsData)) {
-                    // 提取 periodical 字段
                     const periodicalsList = periodicalsData.map(item => item.periodical);
                     setPeriodicals(periodicalsList);
                     if (periodicalsList.length > 0) {
-                        setPeriodical(periodicalsList[0]); // 设置第一个期刊为默认值
+                        setPeriodical(periodicalsList[0]);
                     }
                 } else {
                     throw new Error('Unexpected data format');
@@ -88,6 +85,10 @@ export const RegisterPage: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!role) {
+            setErrorMessage('Please select a role');
+            return;
+        }
         if (password !== confirmPassword) {
             setErrorMessage('Passwords do not match');
             return;
@@ -124,31 +125,38 @@ export const RegisterPage: React.FC = () => {
                     </p>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                    <div className="rounded-md shadow-sm -space-y-px">
+                    <div className="relative mb-6">
+                        <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
+                            Select your role
+                        </label>
                         <div className="relative">
-                            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">Select your
-                                role</label>
                             <select
                                 id="role"
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
+                                onFocus={() => setIsOpen(true)}
+                                onBlur={() => setIsOpen(false)}
                                 required
-                                className="appearance-none rounded-md relative block w-full px-3 py-2 pr-8 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="appearance-none rounded-md relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                             >
                                 <option value="" disabled selected>Choose your role</option>
                                 <option value="manager">Manager</option>
                                 <option value="editor">Editor</option>
                                 <option value="user">User</option>
                             </select>
-                            <div
-                                className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg"
-                                     viewBox="0 0 20 20">
-                                    <path
-                                        d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <svg
+                                    className={`fill-current h-4 w-4 transform ${isOpen ? 'rotate-180' : ''} transition-transform duration-200`}
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20"
+                                >
+                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                                 </svg>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="rounded-md shadow-sm -space-y-px">
                         <div>
                             <label htmlFor="username" className="sr-only">Username</label>
                             <input
@@ -157,7 +165,7 @@ export const RegisterPage: React.FC = () => {
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
                                 required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                 placeholder="Username"
                             />
                         </div>
@@ -270,11 +278,20 @@ export const RegisterPage: React.FC = () => {
                     )}
 
                     {errorMessage && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-                             role="alert">
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                             <span className="block sm:inline">{errorMessage}</span>
                         </div>
                     )}
+
+                    <div className="flex items-center justify-between">
+                        <button
+                            type="button"
+                            onClick={() => history.push('/')}
+                            className="text-sm text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline transition duration-150 ease-in-out"
+                        >
+                            Back to Login
+                        </button>
+                    </div>
 
                     <div>
                         <button
@@ -282,16 +299,6 @@ export const RegisterPage: React.FC = () => {
                             className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         >
                             Register
-                        </button>
-                    </div>
-
-                    <div>
-                        <button
-                            type="button"
-                            onClick={() => history.push('/')}
-                            className="group relative w-full flex justify-center py-2 px-4 border border-indigo-600 text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                        >
-                            Back to Login
                         </button>
                     </div>
                 </form>

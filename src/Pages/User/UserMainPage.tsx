@@ -1,43 +1,20 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import '../../Style/User/UserMain.css';
 import { useUserStore } from '../../Store/UserStore';
+import { UserLayout } from './UserLayout';
 
 export function UserMainPage() {
-    const history = useHistory();
-    const { username, clearUser } = useUserStore();
-
-    const handleLogout = () => {
-        clearUser();
-        history.push('/');
-    };
+    const { username } = useUserStore();
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <div className="header-content">
-                    <h1 className="header-title">Socratic</h1>
-                    <div className="header-nav">
-                        <span className="user-info">Username: {username}</span>
-                        <button className="nav-button" onClick={handleLogout}>Logout</button>
-                    </div>
+        <UserLayout>
+            <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-gray-900">Welcome to the Main Page, {username}!</h2>
+                <p className="text-gray-600">Use the sidebar to navigate to other pages.</p>
+                <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4" role="alert">
+                    <p className="font-bold">Info</p>
+                    <p>This is your personal dashboard. You can submit articles, view your information, and manage your tasks from here.</p>
                 </div>
-            </header>
-            <aside className="sidebar">
-                <nav>
-                    <ul>
-                        <li>MainPage</li>
-                        <li onClick={() => history.push("/UserMain/SubmitArticle")}>Submit articles</li>
-                        <li onClick={()=> history.push("/UserMain/UserInfo")}>Personal Information</li>
-                    </ul>
-                </nav>
-            </aside>
-            <main className="main-content">
-                <h2>Welcome to the Main Page, {username}!</h2>
-                <p>Use the sidebar to navigate to other pages.</p>
-            </main>
-        </div>
+            </div>
+        </UserLayout>
     );
 }
-
-
