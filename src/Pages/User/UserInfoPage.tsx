@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
+import { UserReadProfilePhotoMessage } from 'Plugins/UserAPI/UserReadProfilePhotoMessage';
+import { UserEditProfilePhotoMessage } from 'Plugins/UserAPI/UserEditProfilePhotoMessage';
 import { SendPostRequest } from '../../Common/SendPost';
 import { useUserStore } from '../../Store/UserStore';
 import { UserLayout } from './UserLayout';
@@ -30,9 +32,12 @@ export function UserInfoPage() {
     const { username } = useUserStore();
     const [userInfo, setUserInfo] = useState<Partial<UserInfoData>>({});
     const [errorMessage, setErrorMessage] = useState('');
+    const [profilePhoto, setProfilePhoto] = useState<string>('');
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         loadUserInfo();
+        loadProfilePhoto();
     }, []);
 
     const loadUserInfo = async () => {
@@ -57,6 +62,56 @@ export function UserInfoPage() {
         }
     };
 
+    const loadProfilePhoto = async () => {
+        try {
+            const response = await SendPostRequest(new UserReadProfilePhotoMessage(username));
+            if (response && response.data) {
+                setProfilePhoto(response.data);
+            } else {
+                setProfilePhoto('');
+            }
+        } catch (error) {
+            console.error('Failed to load profile photo:', error);
+            setErrorMessage('Failed to load profile photo. Please try again later.');
+            setProfilePhoto('');
+        }
+    };
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setIsUploading(true);
+            setErrorMessage('');
+            try {
+                const base64String = await convertFileToBase64(file);
+                const response = await SendPostRequest(new UserEditProfilePhotoMessage(username, base64String));
+                if (response && response.data === "OK") {
+                    await loadProfilePhoto(); // 重新加载头像
+                    setErrorMessage('');
+                } else {
+                    setErrorMessage('Failed to upload profile photo. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error uploading profile photo:', error);
+                setErrorMessage('An error occurred while uploading the profile photo. Please try again.');
+            } finally {
+                setIsUploading(false);
+            }
+        }
+    };
+
+    const convertFileToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = (reader.result as string).split(',')[1];
+                resolve(base64String);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
     return (
         <UserLayout>
             <div className="space-y-8">
@@ -68,6 +123,21 @@ export function UserInfoPage() {
                         <span className="block sm:inline">{errorMessage}</span>
                     </div>
                 )}
+                <div className="flex items-center space-x-8">
+                    <div className="flex-shrink-0 w-32 h-32 overflow-hidden rounded-full">
+                        <img
+                            src={`data:image/png;base64,${profilePhoto}`}
+                            alt="Profile"
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label htmlFor="photo-upload" className="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block text-center">
+                            Upload New Photo
+                        </label>
+                        <input id="photo-upload" type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+                    </div>
+                </div>
                 {Object.keys(userInfo).length > 0 ? (
                     <div className="bg-white shadow overflow-hidden sm:rounded-lg">
                         <div className="px-4 py-5 sm:px-6">
