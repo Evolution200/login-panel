@@ -99,22 +99,21 @@ export const LoginPage: React.FC = () => {
         setPassword(e.target.value);
     }, []);
 
-    const handleRememberMeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        setRememberMe(e.target.checked);
-    }, []);
-
-    const handleRegister = useCallback(() => {
-        history.push('/Register');
-    }, [history]);
-
     const buttonClass = useMemo(() => `group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`, [isLoading]);
 
     return (
-        <div className="min-h-screen bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            {/* 背景图案 */}
+            <div className="absolute inset-0 z-0 opacity-10">
+                <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+                    <path d="M14 16H9v-2h5V9.87a4 4 0 1 1 2 0V14h5v2h-5v15.95A10 10 0 0 0 23.66 27l-3.46-2 8.2-2.2-2.9 5a12 12 0 0 1-21 0l-2.89-5 8.2 2.2-3.47 2A10 10 0 0 0 14 31.95V16zm40 40h-5v-2h5v-4.13a4 4 0 1 1 2 0V54h5v2h-5v15.95A10 10 0 0 0 63.66 67l-3.47-2 8.2-2.2-2.88 5a12 12 0 0 1-21.02 0l-2.88-5 8.2 2.2-3.47 2A10 10 0 0 0 54 71.95V56zm-39 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm40-40a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM15 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm40 40a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="currentColor"/>
+                </svg>
+            </div>
+
+            <div className="max-w-md w-full space-y-8 bg-white bg-opacity-90 p-10 rounded-xl shadow-2xl relative z-10">
                 <div>
                     <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                        Socratic
+                        Welcome to Socratic
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
                         Please sign in to continue your review work
@@ -132,7 +131,7 @@ export const LoginPage: React.FC = () => {
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                 placeholder="Username"
                                 value={username}
-                                onChange={handleUsernameChange}
+                                onChange={(e) => setUsername(e.target.value)}
                             />
                         </div>
                         <div>
@@ -145,7 +144,7 @@ export const LoginPage: React.FC = () => {
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                 placeholder="Password"
                                 value={password}
-                                onChange={handlePasswordChange}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
                     </div>
@@ -158,7 +157,7 @@ export const LoginPage: React.FC = () => {
                                 type="checkbox"
                                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                                 checked={rememberMe}
-                                onChange={handleRememberMeChange}
+                                onChange={(e) => setRememberMe(e.target.checked)}
                             />
                             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                                 Remember me
@@ -167,7 +166,7 @@ export const LoginPage: React.FC = () => {
                         <div className="text-sm">
                             <button
                                 type="button"
-                                onClick={handleRegister}
+                                onClick={() => history.push('/Register')}
                                 className="font-medium text-indigo-600 hover:text-indigo-500"
                             >
                                 Register new account

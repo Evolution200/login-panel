@@ -9,7 +9,7 @@ interface SuperuserLayoutProps {
 
 export function SuperuserLayout({ children, currentPage }: SuperuserLayoutProps) {
     const history = useHistory();
-    const { role, clearUser } = useUserStore();
+    const { username, role, clearUser } = useUserStore();
 
     const handleLogout = () => {
         clearUser();
@@ -17,48 +17,60 @@ export function SuperuserLayout({ children, currentPage }: SuperuserLayoutProps)
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-r from-blue-100 to-indigo-100 p-4">
-            <div className="bg-white shadow-md rounded-lg p-6">
-                <header className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold text-gray-900">Socratic</h1>
-                    <div className="flex items-center">
-                        <span className="mr-4 text-gray-700">Current Role: {role}</span>
-                        <button
-                            onClick={handleLogout}
-                            className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300"
-                        >
-                            Logout
-                        </button>
+        <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 relative">
+            {/* 背景图案 */}
+            <div className="absolute inset-0 z-0 opacity-10">
+                <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+                    <path
+                        d="M14 16H9v-2h5V9.87a4 4 0 1 1 2 0V14h5v2h-5v15.95A10 10 0 0 0 23.66 27l-3.46-2 8.2-2.2-2.9 5a12 12 0 0 1-21 0l-2.89-5 8.2 2.2-3.47 2A10 10 0 0 0 14 31.95V16zm40 40h-5v-2h5v-4.13a4 4 0 1 1 2 0V54h5v2h-5v15.95A10 10 0 0 0 63.66 67l-3.47-2 8.2-2.2-2.88 5a12 12 0 0 1-21.02 0l-2.88-5 8.2 2.2-3.47 2A10 10 0 0 0 54 71.95V56zm-39 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm40-40a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM15 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm40 40a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"
+                        fill="currentColor" />
+                </svg>
+            </div>
+
+            <div className="relative z-10">
+                <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                        <div className="flex justify-between items-center">
+                            <div className="flex items-center">
+                                <svg className="h-8 w-8 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                          d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                                <h1 className="text-3xl font-bold">Socratic</h1>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <span className="text-indigo-100">Welcome, {username}</span>
+                                <span className="px-2 py-1 bg-indigo-700 rounded-full text-xs font-medium">{role}</span>
+                                <button
+                                    onClick={handleLogout}
+                                    className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </header>
-                <div className="flex">
+
+                <div className="flex-grow flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <aside className="w-64 pr-8">
-                        <nav>
-                            <ul className="space-y-2">
-                                <li
-                                    className={`p-2 rounded cursor-pointer transition duration-300 ${
-                                        currentPage === 'main'
-                                            ? 'bg-gray-100 text-gray-800'
-                                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                                    }`}
-                                    onClick={() => currentPage !== 'main' && history.push("/SuperuserMain")}
-                                >
-                                    MainPage
-                                </li>
-                                <li
-                                    className={`p-2 rounded cursor-pointer transition duration-300 ${
-                                        currentPage === 'management'
-                                            ? 'bg-gray-100 text-gray-800'
-                                            : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
-                                    }`}
-                                    onClick={() => currentPage !== 'management' && history.push("/SuperuserMain/SuperuserManagement")}
-                                >
-                                    Authority Management
-                                </li>
-                            </ul>
+                        <nav className="space-y-1">
+                            <button
+                                onClick={() => history.push("/SuperuserMain")}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${currentPage === 'main' ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                            >
+                                MainPage
+                            </button>
+                            <button
+                                onClick={() => history.push("/SuperuserMain/SuperuserManagement")}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${currentPage === 'management' ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                            >
+                                Authority Management
+                            </button>
                         </nav>
                     </aside>
-                    <main className="flex-1">
+                    <main
+                        className="flex-1 bg-white bg-opacity-80 p-8 rounded-lg shadow-lg border border-indigo-100 overflow-hidden">
                         {children}
                     </main>
                 </div>

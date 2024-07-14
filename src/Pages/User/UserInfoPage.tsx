@@ -115,48 +115,58 @@ export function UserInfoPage() {
     return (
         <UserLayout>
             <div className="space-y-8">
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-900">User Information</h2>
+                <div className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg rounded-lg overflow-hidden">
+                    <div className="px-4 py-5 sm:p-6">
+                        <h2 className="text-3xl font-extrabold text-white">User Information</h2>
+                        <p className="mt-1 text-xl text-white opacity-80">Manage your personal details</p>
+                    </div>
                 </div>
+
                 {errorMessage && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                         <span className="block sm:inline">{errorMessage}</span>
                     </div>
                 )}
-                <div className="flex items-center space-x-8">
-                    <div className="flex-shrink-0 w-32 h-32 overflow-hidden rounded-full">
-                        <img
-                            src={`data:image/png;base64,${profilePhoto}`}
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label htmlFor="photo-upload" className="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block text-center">
-                            Upload New Photo
-                        </label>
-                        <input id="photo-upload" type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+
+                <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div className="p-6">
+                        <div className="flex items-center space-x-8 mb-6">
+                            <div className="flex-shrink-0 w-32 h-32 overflow-hidden rounded-full">
+                                <img
+                                    src={`data:image/png;base64,${profilePhoto}`}
+                                    alt="Profile"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label htmlFor="photo-upload" className="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block text-center transition duration-150 ease-in-out">
+                                    Upload New Photo
+                                </label>
+                                <input id="photo-upload" type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
+                            </div>
+                        </div>
+
+                        {Object.keys(userInfo).length > 0 ? (
+                            <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+                                <div className="px-4 py-5 sm:px-6">
+                                    <h3 className="text-lg leading-6 font-medium text-gray-900">Personal Details</h3>
+                                </div>
+                                <div className="border-t border-gray-200">
+                                    <dl>
+                                        {userProperties.map((prop, index) => (
+                                            <div key={prop} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6`}>
+                                                <dt className="text-sm font-medium text-gray-500">{propertyDisplayNames[prop]}</dt>
+                                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userInfo[prop] || 'N/A'}</dd>
+                                            </div>
+                                        ))}
+                                    </dl>
+                                </div>
+                            </div>
+                        ) : (
+                            <p className="text-gray-600">Loading user information...</p>
+                        )}
                     </div>
                 </div>
-                {Object.keys(userInfo).length > 0 ? (
-                    <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-                        <div className="px-4 py-5 sm:px-6">
-                            <h3 className="text-lg leading-6 font-medium text-gray-900">Personal Details</h3>
-                        </div>
-                        <div className="border-t border-gray-200">
-                            <dl>
-                                {userProperties.map((prop, index) => (
-                                    <div key={prop} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6`}>
-                                        <dt className="text-sm font-medium text-gray-500">{propertyDisplayNames[prop]}</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{userInfo[prop] || 'N/A'}</dd>
-                                    </div>
-                                ))}
-                            </dl>
-                        </div>
-                    </div>
-                ) : (
-                    <p className="text-gray-600">Loading user information...</p>
-                )}
             </div>
         </UserLayout>
     );

@@ -2,12 +2,12 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useUserStore } from '../../Store/UserStore';
 
-interface ManagerLayoutProps {
+interface EditorLayoutProps {
     children: React.ReactNode;
-    currentPage: 'main' | 'management' | 'periodical';
+    currentPage: 'main' | 'info';
 }
 
-export function ManagerLayout({ children, currentPage }: ManagerLayoutProps) {
+export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
     const history = useHistory();
     const { username, role, clearUser } = useUserStore();
 
@@ -17,15 +17,8 @@ export function ManagerLayout({ children, currentPage }: ManagerLayoutProps) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 relative">
-            {/* 背景图案 */}
-            <div className="absolute inset-0 z-0 opacity-10">
-                <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-                    <path d="M14 16H9v-2h5V9.87a4 4 0 1 1 2 0V14h5v2h-5v15.95A10 10 0 0 0 23.66 27l-3.46-2 8.2-2.2-2.9 5a12 12 0 0 1-21 0l-2.89-5 8.2 2.2-3.47 2A10 10 0 0 0 14 31.95V16zm40 40h-5v-2h5v-4.13a4 4 0 1 1 2 0V54h5v2h-5v15.95A10 10 0 0 0 63.66 67l-3.47-2 8.2-2.2-2.88 5a12 12 0 0 1-21.02 0l-2.88-5 8.2 2.2-3.47 2A10 10 0 0 0 54 71.95V56zm-39 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm40-40a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM15 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm40 40a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="currentColor"/>
-                </svg>
-            </div>
-
-            <div className="relative z-10">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
+            <div className="min-h-screen flex flex-col">
                 <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                         <div className="flex justify-between items-center">
@@ -53,29 +46,36 @@ export function ManagerLayout({ children, currentPage }: ManagerLayoutProps) {
                     <aside className="w-64 pr-8">
                         <nav className="space-y-1">
                             <button
-                                onClick={() => history.push("/ManagerMain")}
+                                onClick={() => history.push("/EditorMain")}
                                 className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${currentPage === 'main' ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
                             >
                                 MainPage
                             </button>
                             <button
-                                onClick={() => history.push("/ManagerMain/ManagerManagement")}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${currentPage === 'management' ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                onClick={() => history.push("/EditorMain/EditorInfo")}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${currentPage === 'info' ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
                             >
-                                Authority Management
-                            </button>
-                            <button
-                                onClick={() => history.push("/ManagerMain/PeriodicalList")}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${currentPage === 'periodical' ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
-                            >
-                                Periodical List
+                                Editor Information
                             </button>
                         </nav>
                     </aside>
-                    <main className="flex-1 bg-white bg-opacity-80 p-8 rounded-lg shadow-lg border border-indigo-100 overflow-hidden">
-                        {children}
+                    <main className="flex-1 bg-white rounded-lg shadow-lg border border-indigo-100 overflow-hidden">
+                        <div className="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4 text-white">
+                            <h2 className="text-xl font-semibold">
+                                {currentPage === 'main' ? 'Editor Dashboard' : 'Editor Information'}
+                            </h2>
+                        </div>
+                        <div className="p-6">
+                            {children}
+                        </div>
                     </main>
                 </div>
+
+                <footer className="bg-indigo-800 text-white py-4">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
+                        © 2024 Socratic. All rights reserved.
+                    </div>
+                </footer>
             </div>
         </div>
     );

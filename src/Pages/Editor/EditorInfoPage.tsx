@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import '../../Style/Editor/EditorInfo.css';
 import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
 import { SendPostRequest } from '../../Common/SendPost';
 import { useUserStore } from '../../Store/UserStore';
+import { EditorLayout } from './EditorLayout';
 
 interface EditorInfoData {
     user_name: string;
@@ -28,19 +27,13 @@ const propertyDisplayNames: Record<keyof EditorInfoData, string> = {
 };
 
 export function EditorInfoPage() {
-    const history = useHistory();
-    const { username, clearUser } = useUserStore();
+    const { username } = useUserStore();
     const [editorInfo, setEditorInfo] = useState<Partial<EditorInfoData>>({});
     const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         loadEditorInfo();
     }, []);
-
-    const handleLogout = () => {
-        clearUser();
-        history.push('/');
-    };
 
     const loadEditorInfo = async () => {
         try {
@@ -65,42 +58,64 @@ export function EditorInfoPage() {
     };
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <div className="header-content">
-                    <h1 className="header-title">Socratic</h1>
-                    <div className="header-nav">
-                        <span className="user-info">Username: {username}</span>
-                        <button className="nav-button" onClick={handleLogout}>Logout</button>
+        <EditorLayout currentPage="info">
+            <div className="space-y-6">
+                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-lg overflow-hidden">
+                    <div className="px-4 py-5 sm:p-6">
+                        <h2 className="text-3xl font-extrabold text-white">
+                            Editor Profile
+                        </h2>
+                        <p className="mt-1 max-w-2xl text-sm text-indigo-100">
+                            Your personal and professional information
+                        </p>
                     </div>
                 </div>
-            </header>
-            <aside className="sidebar">
-                <nav>
-                    <ul>
-                        <li onClick={() => history.push("/EditorMain")}>MainPage</li>
-                        <li>Editor Information</li>
-                    </ul>
-                </nav>
-            </aside>
-            <main className="main-content">
-                <h2>Editor Information</h2>
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
-                {Object.keys(editorInfo).length > 0 ? (
-                    <table className="editor-info-table">
-                        <tbody>
-                        {editorProperties.map(prop => (
-                            <tr key={prop}>
-                                <th>{propertyDisplayNames[prop]}</th>
-                                <td>{editorInfo[prop] || 'N/A'}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <p>Loading editor information...</p>
+
+                {errorMessage && (
+                    <div className="rounded-md bg-red-50 p-4">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            <div className="ml-3">
+                                <h3 className="text-sm font-medium text-red-800">
+                                    Error
+                                </h3>
+                                <div className="mt-2 text-sm text-red-700">
+                                    <p>{errorMessage}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
-            </main>
-        </div>
+
+                <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div className="px-4 py-5 sm:px-6">
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">
+                            Personal Information
+                        </h3>
+                        <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                            Details and application.
+                        </p>
+                    </div>
+                    <div className="border-t border-gray-200">
+                        <dl>
+                            {editorProperties.map((prop, index) => (
+                                <div key={prop} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6`}>
+                                    <dt className="text-sm font-medium text-gray-500">
+                                        {propertyDisplayNames[prop]}
+                                    </dt>
+                                    <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                                        {editorInfo[prop] || 'N/A'}
+                                    </dd>
+                                </div>
+                            ))}
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </EditorLayout>
     );
 }
