@@ -1,4 +1,3 @@
-// PeriodicalStore.tsx
 import create from 'zustand';
 import { SendPostRequest } from '../Common/SendPost';
 import { ReadPeriodicalsMessage } from 'Plugins/ManagerAPI/ReadPeriodicalsMessage';
@@ -11,15 +10,19 @@ interface Periodical {
 
 interface PeriodicalStore {
     periodicals: Periodical[];
+    totalEditors: number;
     error: string | null;
     loading: boolean;
     fetchPeriodicals: () => Promise<void>;
     fetchEditors: (periodicalName: string) => Promise<void>;
+    fetchAllEditorsForPeriodicals: () => Promise<void>;
     setError: (error: string | null) => void;
+    calculateTotalEditors: () => void;
 }
 
 export const usePeriodicalStore = create<PeriodicalStore>((set, get) => ({
     periodicals: [],
+    totalEditors: 0,
     error: null,
     loading: false,
 
@@ -35,6 +38,7 @@ export const usePeriodicalStore = create<PeriodicalStore>((set, get) => ({
                     editors: []
                 }));
                 set({ periodicals, loading: false });
+                await get().fetchAllEditorsForPeriodicals();
             }
         } catch (error) {
             console.error('Failed to load periodicals:', error);
@@ -60,5 +64,16 @@ export const usePeriodicalStore = create<PeriodicalStore>((set, get) => ({
         }
     },
 
+    fetchAllEditorsForPeriodicals: async () => {
+        const { periodicals } = get();
+        await Promise.all(periodicals.map(p => get().fetchEditors(p.name)));
+        get().calculateTotalEditors();
+    },
+
     setError: (error: string | null) => set({ error }),
+
+    calculateTotalEditors: () => {
+        const totalEditors = get().periodicals.reduce((sum, periodical) => sum + periodical.editors.length, 0);
+        set({ totalEditors });
+    },
 }));

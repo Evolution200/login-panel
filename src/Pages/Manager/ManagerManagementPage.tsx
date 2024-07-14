@@ -1,26 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import '../../Style/Manager/ManagerManagement.css';
 import { Application, fetchApplications } from '../../Common/FetchApplication';
 import { FinishEditorMessage } from 'Plugins/ManagerAPI/FinishEditorMessage';
 import { ReadTasksMessage } from 'Plugins/ManagerAPI/ReadTasksMessage'
 import { SendPostRequest } from '../../Common/SendPost';
-import { useUserStore } from '../../Store/UserStore';
+import { ManagerLayout } from './ManagerLayout';
 
 export function ManagerManagementPage() {
-    const history = useHistory();
     const [applications, setApplications] = useState<Application[]>([]);
     const [errorMessage, setErrorMessage] = useState('');
-    const { username, role, clearUser } = useUserStore();
 
     useEffect(() => {
         loadApplications();
     }, []);
-
-    const handleLogout = () => {
-        clearUser();
-        history.push('/');
-    };
 
     const loadApplications = async () => {
         try {
@@ -53,7 +44,7 @@ export function ManagerManagementPage() {
         try {
             await sendFinishEditorMessage(userName, true);
             setErrorMessage('');
-            await loadApplications(); // 重新加载应用列表
+            await loadApplications();
         } catch (error) {
             console.error('Failed to approve application:', error);
             setErrorMessage('Failed to approve application. Please try again later.');
@@ -64,7 +55,7 @@ export function ManagerManagementPage() {
         try {
             await sendFinishEditorMessage(userName, false);
             setErrorMessage('');
-            await loadApplications(); // 重新加载应用列表
+            await loadApplications();
         } catch (error) {
             console.error('Failed to reject application:', error);
             setErrorMessage('Failed to reject application. Please try again later.');
@@ -72,55 +63,48 @@ export function ManagerManagementPage() {
     };
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <div className="header-content">
-                    <h1 className="header-title">Socratic</h1>
-                    <div className="header-nav">
-                        <span className="user-info">Username: {username}</span>
-                        <span className="user-info">Current Role: {role}</span>
-                        <button className="nav-button" onClick={handleLogout}>Logout</button>
-                    </div>
+        <ManagerLayout currentPage="management">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Editor Applications</h2>
+            {errorMessage && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span className="block sm:inline">{errorMessage}</span>
                 </div>
-            </header>
-            <aside className="sidebar">
-                <nav>
-                    <ul>
-                    <li onClick={() => history.push("/ManagerMain")}>MainPage</li>
-                        <li>Authority Editor</li>
-                        <li onClick={() => history.push("/ManagerMain/PeriodicalList")} >Periodical List</li>
-                    </ul>
-                </nav>
-            </aside>
-            <main className="main-content">
-                <h2>Editor Applications</h2>
-                {errorMessage && <p className="error-message">{errorMessage}</p>}
-                {applications.length > 0 ? (
-                    <table className="manager-table">
-                        <thead>
-                        <tr>
-                            <th>No.</th>
-                            <th>User Name</th>
-                            <th>Action</th>
+            )}
+            {applications.length > 0 ? (
+                <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                    <tr>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No.</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User Name</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                    {applications.map((application, index) => (
+                        <tr key={index}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index + 1}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{application.userName}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                <button
+                                    onClick={() => handleApprove(application.userName)}
+                                    className="mr-2 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition duration-300"
+                                >
+                                    Approve
+                                </button>
+                                <button
+                                    onClick={() => handleReject(application.userName)}
+                                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-300"
+                                >
+                                    Reject
+                                </button>
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        {applications.map((application, index) => (
-                            <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{application.userName}</td>
-                                <td>
-                                    <button onClick={() => handleApprove(application.userName)}>Approve</button>
-                                    <button onClick={() => handleReject(application.userName)}>Reject</button>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <p>No applications available.</p>
-                )}
-            </main>
-        </div>
+                    ))}
+                    </tbody>
+                </table>
+            ) : (
+                <p className="text-gray-600">No applications available.</p>
+            )}
+        </ManagerLayout>
     );
 }

@@ -91,8 +91,11 @@ export const RegisterPage: React.FC = () => {
                 if (response.data === "already registered") {
                     setErrorMessage('The username already exists');
                 } else {
+                    // 清除 localStorage 数据
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('password');
+
                     alert('Please wait a moment. Your registration is being processed!');
-                    history.push('/');
                 }
             } else {
                 setErrorMessage('Unexpected error occurred');

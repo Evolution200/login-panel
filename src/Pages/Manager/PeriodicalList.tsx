@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import '../../Style/Manager/PeriodicalList.css';
-import { useUserStore } from '../../Store/UserStore';
 import { usePeriodicalStore } from '../../Store/PeriodicalStore';
 import { AddPeriodicalMessage } from 'Plugins/ManagerAPI/AddPeriodicalMessage';
 import { SendPostRequest } from '../../Common/SendPost';
+import { ManagerLayout } from './ManagerLayout';
 
 export function PeriodicalList() {
-    const history = useHistory();
-    const { username, role, clearUser } = useUserStore();
     const { periodicals, error, loading, fetchPeriodicals, fetchEditors, setError } = usePeriodicalStore();
     const [newPeriodicalName, setNewPeriodicalName] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -23,11 +19,6 @@ export function PeriodicalList() {
         for (const periodical of periodicals) {
             await fetchEditors(periodical.name);
         }
-    };
-
-    const handleLogout = () => {
-        clearUser();
-        history.push('/');
     };
 
     const handleAddPeriodical = async (e: React.FormEvent) => {
@@ -52,65 +43,59 @@ export function PeriodicalList() {
     };
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <div className="header-content">
-                    <h1 className="header-title">Socratic</h1>
-                    <div className="header-nav">
-                        <span className="user-info">Username: {username}</span>
-                        <span className="user-info">Current Role: {role}</span>
-                        <button className="nav-button" onClick={handleLogout}>Logout</button>
-                    </div>
+        <ManagerLayout currentPage="periodical">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Periodical List</h2>
+            {loading && <p className="text-gray-600">Loading...</p>}
+            {error && (
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                    <span className="block sm:inline">{error}</span>
                 </div>
-            </header>
-            <aside className="sidebar">
-                <nav>
-                    <ul>
-                        <li onClick={() => history.push("/ManagerMain")}>MainPage</li>
-                        <li onClick={() => history.push("/ManagerMain/ManagerManagement")}>Authority Management</li>
-                        <li>Periodical List</li>
-                    </ul>
-                </nav>
-            </aside>
-            <main className="main-content">
-                <h2>Periodical List</h2>
-                {loading && <p>Loading...</p>}
-                {error && <p className="error-message">{error}</p>}
-                {!loading && !error && (
-                    <table className="periodical-table">
-                        <thead>
-                        <tr>
-                            <th>Periodical Name</th>
-                            <th>Editors</th>
+            )}
+            {!loading && !error && (
+                <table className="min-w-full divide-y divide-gray-200 mb-8">
+                    <thead className="bg-gray-50">
+                    <tr>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodical Name</th>
+                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Editors</th>
+                    </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                    {periodicals.map((periodical, index) => (
+                        <tr key={index}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{periodical.name}</td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {periodical.editors.length > 0 ? periodical.editors.join(', ') : 'No editors'}
+                            </td>
                         </tr>
-                        </thead>
-                        <tbody>
-                        {periodicals.map((periodical, index) => (
-                            <tr key={index}>
-                                <td>{periodical.name}</td>
-                                <td>{periodical.editors.length > 0 ? periodical.editors.join(', ') : 'No editors'}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                )}
+                    ))}
+                    </tbody>
+                </table>
+            )}
 
-                <h3>Add New Periodical</h3>
-                <form onSubmit={handleAddPeriodical} className="add-periodical-form">
-                    <div className="form-group">
-                        <label htmlFor="newPeriodicalName">Periodical Name:</label>
+            <div className="mt-8">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Add New Periodical</h3>
+                <form onSubmit={handleAddPeriodical} className="space-y-4">
+                    <div>
+                        <label htmlFor="newPeriodicalName" className="block text-sm font-medium text-gray-700">Periodical Name:</label>
                         <input
                             type="text"
                             id="newPeriodicalName"
                             value={newPeriodicalName}
                             onChange={(e) => setNewPeriodicalName(e.target.value)}
                             required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         />
                     </div>
-                    {successMessage && <p className="success-message">{successMessage}</p>}
-                    <button type="submit" className="submit-button">Add Periodical</button>
+                    {successMessage && (
+                        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                            <span className="block sm:inline">{successMessage}</span>
+                        </div>
+                    )}
+                    <button type="submit" className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Add Periodical
+                    </button>
                 </form>
-            </main>
-        </div>
+            </div>
+        </ManagerLayout>
     );
 }
