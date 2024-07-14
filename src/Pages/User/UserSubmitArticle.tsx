@@ -12,6 +12,9 @@ export function UserSubmitArticle() {
     const [taskName, setTaskName] = useState('');
     const [periodicalName, setPeriodicalName] = useState('');
     const [pdfBase64, setPdfBase64] = useState('');
+    const [researchArea, setResearchArea] = useState('');
+    const [abstract, setAbstract] = useState('');
+    const [tldr, setTldr] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [periodicals, setPeriodicals] = useState<string[]>([]);
 
@@ -52,7 +55,7 @@ export function UserSubmitArticle() {
             return;
         }
 
-        const message = new UserSubmissionMessage(username, taskName, periodicalName, pdfBase64);
+        const message = new UserSubmissionMessage(username, taskName, periodicalName, pdfBase64, researchArea, abstract, tldr);
 
         try {
             const response = await SendPostRequest(message);
@@ -62,6 +65,9 @@ export function UserSubmitArticle() {
                     setTaskName('');
                     setPeriodicalName(periodicals[0] || '');
                     setPdfBase64('');
+                    setResearchArea('');
+                    setAbstract('');
+                    setTldr('');
                 } else if (response.data === "Task Name Conflict") {
                     setErrorMessage("A task with this name already exists. Please choose a different task name.");
                 } else {
@@ -113,6 +119,48 @@ export function UserSubmitArticle() {
                                 <option key={index} value={periodical}>{periodical}</option>
                             ))}
                         </select>
+                    </div>
+                    <div>
+                        <label htmlFor="researchArea" className="block text-sm font-medium text-gray-700">
+                            Research Area
+                        </label>
+                        <input
+                            id="researchArea"
+                            name="researchArea"
+                            type="text"
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            value={researchArea}
+                            onChange={(e) => setResearchArea(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="abstract" className="block text-sm font-medium text-gray-700">
+                            Abstract
+                        </label>
+                        <textarea
+                            id="abstract"
+                            name="abstract"
+                            rows={4}
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            value={abstract}
+                            onChange={(e) => setAbstract(e.target.value)}
+                        ></textarea>
+                    </div>
+                    <div>
+                        <label htmlFor="tldr" className="block text-sm font-medium text-gray-700">
+                            TL;DR
+                        </label>
+                        <textarea
+                            id="tldr"
+                            name="tldr"
+                            rows={2}
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            value={tldr}
+                            onChange={(e) => setTldr(e.target.value)}
+                        ></textarea>
                     </div>
                     <div>
                         <label htmlFor="pdf" className="block text-sm font-medium text-gray-700">
