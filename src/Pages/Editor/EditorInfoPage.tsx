@@ -114,79 +114,53 @@ export function EditorInfoPage() {
 
     return (
         <EditorLayout currentPage="info">
-            <div className="space-y-8">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg shadow-lg overflow-hidden">
+            <div className="max-w-4xl mx-auto space-y-8 p-6">
+                <div className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg rounded-lg overflow-hidden">
                     <div className="px-4 py-5 sm:p-6">
-                        <h2 className="text-3xl font-extrabold text-white">
-                            Editor Profile
-                        </h2>
-                        <p className="mt-1 max-w-2xl text-sm text-indigo-100">
-                            Your personal and professional information
-                        </p>
+                        <h2 className="text-3xl font-extrabold text-white">Editor Profile</h2>
+                        <p className="mt-1 text-xl text-white opacity-80">Manage your personal and professional information</p>
                     </div>
                 </div>
 
                 {errorMessage && (
-                    <div className="rounded-md bg-red-50 p-4">
-                        <div className="flex">
-                            <div className="flex-shrink-0">
-                                <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                </svg>
-                            </div>
-                            <div className="ml-3">
-                                <h3 className="text-sm font-medium text-red-800">
-                                    Error
-                                </h3>
-                                <div className="mt-2 text-sm text-red-700">
-                                    <p>{errorMessage}</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded" role="alert">
+                        <p className="font-bold">Error</p>
+                        <p>{errorMessage}</p>
                     </div>
                 )}
 
-                <div className="bg-white shadow-md rounded-lg overflow-hidden">
-                    <div className="p-6">
-                        <div className="flex items-center space-x-8 mb-6">
-                            <div className="flex-shrink-0 w-32 h-32 overflow-hidden rounded-full">
+                <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+                    <div className="p-8">
+                        <div className="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8 mb-8">
+                            <div className="flex-shrink-0 w-40 h-40 rounded-full overflow-hidden shadow-lg">
                                 <img
                                     src={`data:image/png;base64,${profilePhoto}`}
                                     alt="Profile"
                                     className="w-full h-full object-cover"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label htmlFor="photo-upload" className="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded block text-center transition duration-150 ease-in-out">
-                                    Upload New Photo
+                            <div className="flex flex-col space-y-4">
+                                <h3 className="text-2xl font-semibold text-gray-800">{editorInfo.sur_name} {editorInfo.last_name}</h3>
+                                <p className="text-gray-600">{editorInfo.email}</p>
+                                <label htmlFor="photo-upload" className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out inline-block text-center">
+                                    Update Profile Picture
                                 </label>
                                 <input id="photo-upload" type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
                             </div>
                         </div>
 
-                        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-                            <div className="px-4 py-5 sm:px-6">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                    Personal Information
-                                </h3>
-                                <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                                    Details and application.
-                                </p>
-                            </div>
-                            <div className="border-t border-gray-200">
-                                <dl>
-                                    {editorProperties.map((prop, index) => (
-                                        <div key={prop} className={`${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6`}>
-                                            <dt className="text-sm font-medium text-gray-500">
-                                                {propertyDisplayNames[prop]}
-                                            </dt>
-                                            <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                                {editorInfo[prop] || 'N/A'}
-                                            </dd>
-                                        </div>
-                                    ))}
-                                </dl>
-                            </div>
+                        <div className="bg-gray-50 rounded-lg p-6">
+                            <h4 className="text-xl font-semibold text-gray-700 mb-4">Personal Information</h4>
+                            <dl className="space-y-6">
+                                {editorProperties.map((prop) => (
+                                    <div key={prop} className="flex flex-col sm:flex-row sm:justify-between">
+                                        <dt className="text-sm font-medium text-gray-500 mb-1 sm:mb-0">{propertyDisplayNames[prop]}</dt>
+                                        <dd className="text-sm text-gray-900 sm:text-right">
+                                            <span>{editorInfo[prop] || 'N/A'}</span>
+                                        </dd>
+                                    </div>
+                                ))}
+                            </dl>
                         </div>
                     </div>
                 </div>
