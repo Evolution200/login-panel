@@ -66,6 +66,12 @@ export function UserLayout({ children }: UserLayoutProps) {
                                 Submit Article
                             </button>
                             <button
+                                onClick={() => history.push("/UserMain/UserPersonalPeriodical")}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive("/UserMain/UserPersonalPeriodical") ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                            >
+                                My Articles
+                            </button>
+                            <button
                                 onClick={() => history.push("/UserMain/UserInfo")}
                                 className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive("/UserMain/UserInfo") ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
                             >
@@ -73,7 +79,8 @@ export function UserLayout({ children }: UserLayoutProps) {
                             </button>
                         </nav>
                     </aside>
-                    <main className="flex-1 bg-white bg-opacity-80 p-8 rounded-lg shadow-lg border border-indigo-100 overflow-hidden">
+                    <main
+                        className="flex-1 bg-white bg-opacity-80 p-8 rounded-lg shadow-lg border border-indigo-100 overflow-hidden">
                         {children}
                     </main>
                 </div>

@@ -139,12 +139,13 @@ export const RegisterPage: React.FC = () => {
                                 required
                                 className="appearance-none rounded-md relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                             >
-                                <option value="" disabled selected>Choose your role</option>
+                                <option value="" disabled>Choose your role</option>
                                 <option value="manager">Manager</option>
                                 <option value="editor">Editor</option>
                                 <option value="user">User</option>
                             </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <div
+                                className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                                 <svg
                                     className={`fill-current h-4 w-4 transform ${isOpen ? 'rotate-180' : ''} transition-transform duration-200`}
                                     xmlns="http://www.w3.org/2000/svg"

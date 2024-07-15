@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useUserStore } from '../../Store/UserStore';
+import { useUserTaskStore } from '../../Store/UserTaskStore';
 import { UserLayout } from './UserLayout';
 
 export function UserMainPage() {
     const { username } = useUserStore();
+    const { tasks, fetchTasks } = useUserTaskStore();
     const history = useHistory();
+    const [stats, setStats] = useState({ submitted: 0, inReview: 0 });
+
+    useEffect(() => {
+        if (username) {
+            fetchTasks(username);
+        }
+    }, [username, fetchTasks]);
+
+    useEffect(() => {
+        const submitted = tasks.length;
+        const inReview = tasks.filter(task => task.state !== 'accepted').length;
+        setStats({ submitted, inReview });
+    }, [tasks]);
 
     return (
         <UserLayout>
@@ -36,7 +51,7 @@ export function UserMainPage() {
                                             Submitted Articles
                                         </dt>
                                         <dd className="text-3xl font-semibold text-gray-900">
-                                            5
+                                            {stats.submitted}
                                         </dd>
                                     </dl>
                                 </div>
@@ -47,18 +62,18 @@ export function UserMainPage() {
                     <div className="bg-white overflow-hidden shadow rounded-lg">
                         <div className="p-5">
                             <div className="flex items-center">
-                                <div className="flex-shrink-0 bg-green-500 rounded-md p-3">
+                                <div className="flex-shrink-0 bg-yellow-500 rounded-md p-3">
                                     <svg className="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                                     </svg>
                                 </div>
                                 <div className="ml-5 w-0 flex-1">
                                     <dl>
                                         <dt className="text-sm font-medium text-gray-500 truncate">
-                                            Approved Articles
+                                            Articles in Review
                                         </dt>
                                         <dd className="text-3xl font-semibold text-gray-900">
-                                            3
+                                            {stats.inReview}
                                         </dd>
                                     </dl>
                                 </div>
