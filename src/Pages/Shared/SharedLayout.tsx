@@ -6,7 +6,7 @@ type UserLayoutProps = {
     children: React.ReactNode;
 };
 
-export function UserLayout({ children }: UserLayoutProps) {
+export function SharedLayout({ children }: UserLayoutProps) {
     const history = useHistory();
     const location = useLocation();
     const { username, clearUser } = useUserStore();

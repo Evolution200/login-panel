@@ -1,76 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { EditorLayout } from './EditorLayout';
 import { useUserStore } from '../../Store/UserStore';
-import { SendPostRequest } from '../../Common/SendPost';
-import { ReadPeriodicalTaskListMessage } from 'Plugins/TaskAPI/ReadPeriodicalTaskListMessage';
-import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
-import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
-import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
+import { useEditorTaskStore } from '../../Store/EditorTaskStore';
 
-interface Article {
-    taskName: string;
-    periodical: string;
-    author: string;
-    state: string;
+// 使用枚举定义可能的状态类型
+enum TaskState {
+    Init = 'init',
+    InProgress = 'inProgress',
+    Completed = 'completed',
+    Rejected = 'rejected'
 }
+
+// 使用 Record 类型来定义 stateColorMap，现在使用 TaskState 枚举
+const stateColorMap: Record<TaskState, string> = {
+    [TaskState.Init]: 'bg-blue-100 text-blue-800',
+    [TaskState.InProgress]: 'bg-yellow-100 text-yellow-800',
+    [TaskState.Completed]: 'bg-green-100 text-green-800',
+    [TaskState.Rejected]: 'bg-red-100 text-red-800'
+};
 
 export function EditorArticlesPage() {
     const { username } = useUserStore();
-    const [articles, setArticles] = useState<Article[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [periodicalName, setPeriodicalName] = useState<string>('');
+    const { tasks, editorPeriodical, loading, error, fetchEditorPeriodical, fetchTasks } = useEditorTaskStore();
 
     useEffect(() => {
-        fetchEditorPeriodicalAndArticles();
-    }, [username]);
-
-    const fetchEditorPeriodicalAndArticles = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const periodicalResponse = await SendPostRequest(new EditorReadInfoMessage(username, 'periodical'));
-            if (!periodicalResponse || !periodicalResponse.data) {
-                throw new Error('Failed to fetch editor periodical');
-            }
-            const fetchedPeriodicalName = periodicalResponse.data;
-            setPeriodicalName(fetchedPeriodicalName);
-
-            const articlesResponse = await SendPostRequest(new ReadPeriodicalTaskListMessage(fetchedPeriodicalName));
-            if (!articlesResponse || !articlesResponse.data) {
-                throw new Error('Failed to fetch articles');
-            }
-            const taskList = JSON.parse(articlesResponse.data);
-
-            const articlesData = await Promise.all(taskList.map(async (task: { taskName: string }) => {
-                const [stateResponse, authorResponse] = await Promise.all([
-                    SendPostRequest(new ReadTaskInfoMessage(task.taskName, 'state')),
-                    SendPostRequest(new ReadTaskInfoMessage(task.taskName, 'author'))
-                ]);
-
-                const [surNameResponse, lastNameResponse] = await Promise.all([
-                    SendPostRequest(new UserReadInfoMessage(authorResponse.data, 'sur_name')),
-                    SendPostRequest(new UserReadInfoMessage(authorResponse.data, 'last_name'))
-                ]);
-
-                const authorName = `${surNameResponse.data} ${lastNameResponse.data}`;
-
-                return {
-                    taskName: task.taskName,
-                    periodical: fetchedPeriodicalName,
-                    author: authorName,
-                    state: stateResponse.data || 'Unknown'
-                };
-            }));
-
-            setArticles(articlesData);
-        } catch (error) {
-            console.error('Error fetching periodical and articles:', error);
-            setError('Failed to load periodical and articles. Please try again.');
-        } finally {
-            setLoading(false);
+        if (username) {
+            fetchEditorPeriodical(username).then(() => fetchTasks());
         }
+    }, [username, fetchEditorPeriodical, fetchTasks]);
+
+    const getDisplayState = (state: string): string => {
+        return state === TaskState.Init ? 'Initial Review' : state;
+    };
+
+    const getStateColorClass = (state: string): string => {
+        return stateColorMap[state as TaskState] || 'bg-gray-100 text-gray-800';
     };
 
     return (
@@ -78,48 +43,51 @@ export function EditorArticlesPage() {
             <div className="space-y-8">
                 <div className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg rounded-lg overflow-hidden">
                     <div className="px-4 py-5 sm:p-6">
-                        <h2 className="text-3xl font-extrabold text-white">Articles in {periodicalName}</h2>
+                        <h2 className="text-3xl font-extrabold text-white">Articles in {editorPeriodical}</h2>
                         <p className="mt-1 text-xl text-white opacity-80">
-                            View all articles submitted to your journal
+                            Manage and review submitted articles
                         </p>
                     </div>
                 </div>
 
-                {loading && <p className="text-center text-gray-600">Loading articles...</p>}
-                {error && <p className="text-center text-red-600">{error}</p>}
-
-                {!loading && !error && (
-                    <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                            <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task Name</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodical</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Author</th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State</th>
-                            </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                            {articles.map((article) => (
-                                <tr key={article.taskName} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <Link to={`/article-log/${encodeURIComponent(article.taskName)}`} className="text-indigo-600 hover:text-indigo-900">
-                                            {article.taskName}
-                                        </Link>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{article.periodical}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{article.author}</td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                {article.state}
-                                            </span>
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
+                <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div className="px-4 py-5 sm:p-6">
+                        {loading && <p className="text-gray-600">Loading...</p>}
+                        {error && <p className="text-red-600">{error}</p>}
+                        {!loading && !error && (
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Article Name</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Authors</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodical</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                    {tasks.map((task) => (
+                                        <tr key={task.taskName} className="hover:bg-gray-50">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                <Link to={`/article-log/${encodeURIComponent(task.taskName)}`} className="text-indigo-600 hover:text-indigo-900">
+                                                    {task.taskName}
+                                                </Link>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{task.authors.join(', ')}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{task.periodicalName}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStateColorClass(task.state)}`}>
+                                                    {getDisplayState(task.state)}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
         </EditorLayout>
     );

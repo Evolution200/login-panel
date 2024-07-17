@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { EditorLayout } from './EditorLayout';
 import { useUserStore } from '../../Store/UserStore';
+import { useEditorTaskStore } from '../../Store/EditorTaskStore';
 
 export function EditorMainPage() {
     const { username } = useUserStore();
+    const { tasks, editorPeriodical, loading, error, fetchEditorPeriodical, fetchTasks } = useEditorTaskStore();
+    const [stats, setStats] = useState({ total: 0, inReview: 0 });
     const history = useHistory();
+
+    useEffect(() => {
+        if (username) {
+            fetchEditorPeriodical(username).then(() => fetchTasks());
+        }
+    }, [username, fetchEditorPeriodical, fetchTasks]);
+
+    useEffect(() => {
+        const total = tasks.length;
+        const inReview = tasks.filter(task => task.state !== 'completed' && task.state !== 'rejected').length;
+        setStats({ total, inReview });
+    }, [tasks]);
 
     return (
         <EditorLayout currentPage="main">
@@ -33,10 +48,10 @@ export function EditorMainPage() {
                                 <div className="ml-5 w-0 flex-1">
                                     <dl>
                                         <dt className="text-sm font-medium text-gray-500 truncate">
-                                            Pending Reviews
+                                            Articles in Review
                                         </dt>
                                         <dd className="text-3xl font-semibold text-gray-900">
-                                            5
+                                            {stats.inReview}
                                         </dd>
                                     </dl>
                                 </div>
@@ -55,10 +70,10 @@ export function EditorMainPage() {
                                 <div className="ml-5 w-0 flex-1">
                                     <dl>
                                         <dt className="text-sm font-medium text-gray-500 truncate">
-                                            Completed Reviews
+                                            Total Articles
                                         </dt>
                                         <dd className="text-3xl font-semibold text-gray-900">
-                                            28
+                                            {stats.total}
                                         </dd>
                                     </dl>
                                 </div>
@@ -84,7 +99,7 @@ export function EditorMainPage() {
                             </div>
                             <div>
                                 <button
-                                    onClick={() => history.push("/EditorMain/PendingReviews")}
+                                    onClick={() => history.push("/EditorMain/EditorArticles")}
                                     className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out"
                                 >
                                     <svg className="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
