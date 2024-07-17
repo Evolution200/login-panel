@@ -4,7 +4,7 @@ import { useUserStore } from '../../Store/UserStore';
 
 interface EditorLayoutProps {
     children: React.ReactNode;
-    currentPage: 'main' | 'info';
+    currentPage: 'main' | 'info' | 'articles';
 }
 
 export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
@@ -15,6 +15,12 @@ export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
         clearUser();
         history.push('/');
     };
+
+    const navItems = [
+        { name: 'MainPage', path: '/EditorMain', id: 'main' },
+        { name: 'Editor Information', path: '/EditorMain/EditorInfo', id: 'info' },
+        { name: 'Journal Articles', path: '/EditorMain/EditorArticles', id: 'articles' }
+    ];
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
@@ -45,24 +51,26 @@ export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
                 <div className="flex-grow flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <aside className="w-64 pr-8">
                         <nav className="space-y-1">
-                            <button
-                                onClick={() => history.push("/EditorMain")}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${currentPage === 'main' ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
-                            >
-                                MainPage
-                            </button>
-                            <button
-                                onClick={() => history.push("/EditorMain/EditorInfo")}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${currentPage === 'info' ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
-                            >
-                                Editor Information
-                            </button>
+                            {navItems.map((item) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => history.push(item.path)}
+                                    className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${
+                                        currentPage === item.id
+                                            ? 'bg-indigo-100 text-indigo-900 shadow-inner'
+                                            : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'
+                                    } transition duration-150 ease-in-out`}
+                                >
+                                    {item.name}
+                                </button>
+                            ))}
                         </nav>
                     </aside>
                     <main className="flex-1 bg-white rounded-lg shadow-lg border border-indigo-100 overflow-hidden">
                         <div className="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4 text-white">
                             <h2 className="text-xl font-semibold">
-                                {currentPage === 'main' ? 'Editor Dashboard' : 'Editor Information'}
+                                {currentPage === 'main' ? 'Editor Dashboard' :
+                                    currentPage === 'info' ? 'Editor Information' : 'Journal Articles'}
                             </h2>
                         </div>
                         <div className="p-6">

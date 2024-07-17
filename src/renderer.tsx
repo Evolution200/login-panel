@@ -13,9 +13,10 @@ import { UserInfoPage} from 'Pages/User/UserInfoPage'
 import { EditorInfoPage } from 'Pages/Editor/EditorInfoPage'
 import { PeriodicalList } from 'Pages/Manager/PeriodicalList'
 import { UserSubmitArticle} from 'Pages/User/UserSubmitArticle'
-import { UserPersonalArticlePage } from 'Pages/User/UserPersonalArticleList'
+import { UserPersonalArticlePage } from 'Pages/User/UserPersonalArticlePage'
 import './index.css';
 import { ArticleLogPage } from 'Pages/Shared/ArticleLogPage'
+import { EditorArticlesPage } from 'Pages/Editor/EditorArticlesPage'
 
 const Layout: React.FC = () => {
     return (
@@ -30,6 +31,7 @@ const Layout: React.FC = () => {
                 <Route path="/ManagerMain/PeriodicalList" exact component={PeriodicalList} />
                 <Route path="/EditorMain" exact component={EditorMainPage} />
                 <Route path="/EditorMain/EditorInfo" exact component={EditorInfoPage} />
+                <Route path="/EditorMain/EditorArticles" exact component={EditorArticlesPage} />
                 <Route path="/UserMain" exact component={UserMainPage} />
                 <Route path="/UserMain/UserInfo" exact component={UserInfoPage} />
                 <Route path="/UserMain/UserSubmitArticle" exact component={UserSubmitArticle} />

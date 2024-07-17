@@ -6,6 +6,8 @@ import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
 import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
 import { useUserStore } from '../../Store/UserStore';
 import { CommentSystem } from './CommentSystem';
+import { ReadTaskPDFMessage } from 'Plugins/TaskAPI/ReadTaskPDFMessage'
+import { UserReadProfilePhotoMessage } from 'Plugins/UserAPI/UserReadProfilePhotoMessage'
 
 interface ArticleInfo {
     title: string;
@@ -15,6 +17,7 @@ interface ArticleInfo {
     tldr: string;
     abstract: string;
     keywords: string;
+    pdfBase64: string;
 }
 
 export function ArticleLogPage() {
@@ -23,6 +26,7 @@ export function ArticleLogPage() {
     const [articleInfo, setArticleInfo] = useState<ArticleInfo | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [article, setArticle] = useState<string>('');
 
     useEffect(() => {
         async function fetchArticleInfo() {
@@ -36,6 +40,7 @@ export function ArticleLogPage() {
                 const tldrResponse = await SendPostRequest(new ReadTaskInfoMessage(taskName, 'tldr'));
                 const abstractResponse = await SendPostRequest(new ReadTaskInfoMessage(taskName, 'abstract'));
                 const keywordsResponse = await SendPostRequest(new ReadTaskInfoMessage(taskName, 'keyword'));
+                const ArticleResponse = await SendPostRequest(new ReadTaskPDFMessage(taskName));
 
                 if (!taskPeriodicalResponse.data || !taskAreaResponse.data || !tldrResponse.data || !abstractResponse.data || !keywordsResponse.data) {
                     throw new Error("Failed to fetch task info");
@@ -57,7 +62,8 @@ export function ArticleLogPage() {
                     taskArea: taskAreaResponse.data,
                     tldr: tldrResponse.data,
                     abstract: abstractResponse.data,
-                    keywords: keywordsResponse.data
+                    keywords: keywordsResponse.data,
+                    pdfBase64: ArticleResponse.data
                 });
             } catch (err) {
                 setError("An error occurred while fetching article information.");
@@ -69,6 +75,19 @@ export function ArticleLogPage() {
 
         fetchArticleInfo();
     }, [taskName, username]);
+
+    const handleDownloadPDF = async () => {
+        try {
+            const response = await SendPostRequest(new UserReadProfilePhotoMessage(username));
+            if (response && response.data) {
+                setArticle(response.data);
+            } else {
+                setArticle('');
+            }
+        } catch (error) {
+            console.error('Failed to load profile photo:', error);
+        }
+    };
 
     if (loading) {
         return <UserLayout><div className="text-center mt-8">Loading...</div></UserLayout>;
@@ -109,6 +128,12 @@ export function ArticleLogPage() {
                             <h3 className="text-xl font-semibold text-gray-800 mb-2">Abstract</h3>
                             <p className="text-gray-700">{articleInfo.abstract}</p>
                         </div>
+                        <button
+                            onClick={handleDownloadPDF}
+                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-300"
+                        >
+                            Download PDF
+                        </button>
                     </div>
                 </div>
 
