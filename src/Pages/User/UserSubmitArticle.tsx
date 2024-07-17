@@ -13,6 +13,7 @@ export function UserSubmitArticle() {
     const [periodicalName, setPeriodicalName] = useState('');
     const [pdfBase64, setPdfBase64] = useState('');
     const [researchArea, setResearchArea] = useState('');
+    const [keywords, setKeywords] = useState('');
     const [abstract, setAbstract] = useState('');
     const [tldr, setTldr] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -55,7 +56,7 @@ export function UserSubmitArticle() {
             return;
         }
 
-        const message = new UserSubmissionMessage(username, taskName, periodicalName, pdfBase64, researchArea, abstract, tldr);
+        const message = new UserSubmissionMessage(username, taskName, periodicalName, pdfBase64, researchArea, abstract, tldr, keywords);
 
         try {
             const response = await SendPostRequest(message);
@@ -66,6 +67,7 @@ export function UserSubmitArticle() {
                     setPeriodicalName(periodicals[0] || '');
                     setPdfBase64('');
                     setResearchArea('');
+                    setKeywords('');
                     setAbstract('');
                     setTldr('');
                 } else if (response.data === "Task Name Conflict") {
@@ -138,6 +140,21 @@ export function UserSubmitArticle() {
                         />
                     </div>
                     <div>
+                        <label htmlFor="keywords" className="block text-sm font-medium text-gray-700">
+                            Keywords (comma separated)
+                        </label>
+                        <input
+                            id="keywords"
+                            name="keywords"
+                            type="text"
+                            required
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            value={keywords}
+                            onChange={(e) => setKeywords(e.target.value)}
+                            placeholder="e.g. machine learning, natural language processing, neural networks"
+                        />
+                    </div>
+                    <div>
                         <label htmlFor="abstract" className="block text-sm font-medium text-gray-700">
                             Abstract
                         </label>
@@ -181,7 +198,8 @@ export function UserSubmitArticle() {
                     </div>
 
                     {errorMessage && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                             role="alert">
                             <span className="block sm:inline">{errorMessage}</span>
                         </div>
                     )}

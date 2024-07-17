@@ -8,8 +8,9 @@ export class UserSubmissionMessage extends UserMessage {
     researchArea: string;
     Abstract: string;
     TLDR: string;
+    keyword: string
 
-    constructor(userName:string, taskName:string, periodicalName:string, pdfBase64:string, researchArea:string, Abstract:string, TLDR:string) {
+    constructor(userName:string, taskName:string, periodicalName:string, pdfBase64:string, researchArea:string, Abstract:string, TLDR:string, keyword:string) {
         super();
         this.userName = userName;
         this.taskName = taskName;
@@ -18,5 +19,6 @@ export class UserSubmissionMessage extends UserMessage {
         this.researchArea = researchArea;
         this.Abstract = Abstract;
         this.TLDR = TLDR;
+        this.keyword = keyword;
     }
 }

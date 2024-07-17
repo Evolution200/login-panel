@@ -15,6 +15,7 @@ import { PeriodicalList } from 'Pages/Manager/PeriodicalList'
 import { UserSubmitArticle} from 'Pages/User/UserSubmitArticle'
 import { UserPersonalArticlePage } from 'Pages/User/UserPersonalArticleList'
 import './index.css';
+import { ArticleLogPage } from 'Pages/Shared/ArticleLogPage'
 
 const Layout: React.FC = () => {
     return (
@@ -33,6 +34,7 @@ const Layout: React.FC = () => {
                 <Route path="/UserMain/UserInfo" exact component={UserInfoPage} />
                 <Route path="/UserMain/UserSubmitArticle" exact component={UserSubmitArticle} />
                 <Route path="/UserMain/UserPersonalPeriodical" exact component={UserPersonalArticlePage} />
+                <Route path="/article-log/:taskName" component={ArticleLogPage} />
             </Switch>
         </HashRouter>
     );
