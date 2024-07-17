@@ -9,19 +9,9 @@ interface CommentSystemProps {
 }
 
 export function CommentSystem({ taskName }: CommentSystemProps) {
-    const { username, role } = useUserStore();
+    const { username } = useUserStore();
     const [logs, setLogs] = useState<LogData[]>([]);
-    const [newLog, setNewLog] = useState<LogData>({
-        logType: 'Comment',
-        userName: username,
-        comment: '',
-        decision: Decision.Review,
-        reasonsToAccept: '',
-        reasonsToReject: '',
-        questionsToAuthors: '',
-        rating: 0,
-        confidence: 0
-    });
+    const [newComment, setNewComment] = useState('');
 
     useEffect(() => {
         fetchLogs();
@@ -39,37 +29,29 @@ export function CommentSystem({ taskName }: CommentSystemProps) {
         }
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
-        setNewLog(prev => {
-            if (name === 'rating' || name === 'confidence') {
-                return { ...prev, [name]: parseInt(value) || 0 };
-            }
-            if (name === 'decision') {
-                return { ...prev, [name]: value as Decision };
-            }
-            return { ...prev, [name]: value };
-        });
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setNewComment(e.target.value);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            await SendPostRequest(new AddLogMessage(taskName, newLog));
-            setNewLog({
+            const newLog: LogData = {
                 logType: 'Comment',
                 userName: username,
-                comment: '',
-                decision: Decision.Review,
+                comment: newComment,
+                decision: Decision.None,
                 reasonsToAccept: '',
                 reasonsToReject: '',
                 questionsToAuthors: '',
                 rating: 0,
                 confidence: 0
-            });
+            };
+            await SendPostRequest(new AddLogMessage(taskName, newLog));
+            setNewComment('');
             fetchLogs();
         } catch (error) {
-            console.error('Failed to add log:', error);
+            console.error('Failed to add comment:', error);
         }
     };
 
@@ -79,136 +61,36 @@ export function CommentSystem({ taskName }: CommentSystemProps) {
             <div className="space-y-4">
                 {logs.map((log, index) => (
                     <div key={index} className="bg-gray-100 p-4 rounded-lg">
-                        {log.logType === 'Comment' ? (
+                        <p className="font-semibold">{log.userName} - {log.logType}</p>
+                        <p>{log.comment}</p>
+                        {log.logType === 'Decision' && log.decision !== Decision.None && (
                             <>
-                                <p className="font-semibold">{log.logType}</p>
-                                <p>{log.comment}</p>
+                                <p>Decision: {log.decision}</p>
+                                <p>Reasons to Accept: {log.reasonsToAccept}</p>
+                                <p>Reasons to Reject: {log.reasonsToReject}</p>
+                                <p>Questions to Authors: {log.questionsToAuthors}</p>
                             </>
-                        ) : (
+                        )}
+                        {log.logType === 'Review' && (
                             <>
-                                <p className="font-semibold">{log.userName} - {log.logType}</p>
-                                <p>{log.comment}</p>
-                                {log.logType === 'Decision' && (
-                                    <>
-                                        <p>Decision: {log.decision}</p>
-                                        <p>Reasons to Accept: {log.reasonsToAccept}</p>
-                                        <p>Reasons to Reject: {log.reasonsToReject}</p>
-                                        <p>Questions to Authors: {log.questionsToAuthors}</p>
-                                    </>
-                                )}
-                                {log.logType === 'Review' && (
-                                    <>
-                                        <p>Rating: {log.rating}</p>
-                                        <p>Confidence: {log.confidence}</p>
-                                    </>
-                                )}
+                                <p>Rating: {log.rating}</p>
+                                <p>Confidence: {log.confidence}</p>
                             </>
                         )}
                     </div>
                 ))}
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-                <div>
-                    <label className="block mb-1">Log Type</label>
-                    <select
-                        name="logType"
-                        value={newLog.logType}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border rounded"
-                    >
-                        <option value="Comment">Comment</option>
-                        <option value="Review">Review</option>
-                        {role !== 'user' && <option value="Decision">Decision</option>}
-                    </select>
-                </div>
-                <div>
-                    <label className="block mb-1">Comment</label>
-                    <textarea
-                        name="comment"
-                        value={newLog.comment}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border rounded"
-                        rows={4}
-                    ></textarea>
-                </div>
-                {newLog.logType === 'Decision' && (
-                    <>
-                        <div>
-                            <label className="block mb-1">Decision</label>
-                            <select
-                                name="decision"
-                                value={newLog.decision}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border rounded"
-                            >
-                                {Object.values(Decision).map(decision => (
-                                    <option key={decision} value={decision}>{decision}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div>
-                            <label className="block mb-1">Reasons to Accept</label>
-                            <textarea
-                                name="reasonsToAccept"
-                                value={newLog.reasonsToAccept}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border rounded"
-                                rows={2}
-                            ></textarea>
-                        </div>
-                        <div>
-                            <label className="block mb-1">Reasons to Reject</label>
-                            <textarea
-                                name="reasonsToReject"
-                                value={newLog.reasonsToReject}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border rounded"
-                                rows={2}
-                            ></textarea>
-                        </div>
-                        <div>
-                            <label className="block mb-1">Questions to Authors</label>
-                            <textarea
-                                name="questionsToAuthors"
-                                value={newLog.questionsToAuthors}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border rounded"
-                                rows={2}
-                            ></textarea>
-                        </div>
-                    </>
-                )}
-                {newLog.logType === 'Review' && (
-                    <>
-                        <div>
-                            <label className="block mb-1">Rating</label>
-                            <input
-                                type="number"
-                                name="rating"
-                                value={newLog.rating}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border rounded"
-                                min="0"
-                                max="10"
-                            />
-                        </div>
-                        <div>
-                            <label className="block mb-1">Confidence</label>
-                            <input
-                                type="number"
-                                name="confidence"
-                                value={newLog.confidence}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border rounded"
-                                min="0"
-                                max="10"
-                            />
-                        </div>
-                    </>
-                )}
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                    Submit
+            <form onSubmit={handleSubmit} className="mt-6">
+                <textarea
+                    value={newComment}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    rows={4}
+                    placeholder="Add a comment..."
+                ></textarea>
+                <button type="submit" className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                    Add Comment
                 </button>
             </form>
         </div>

@@ -3,7 +3,8 @@ import { TaskMessage } from 'Plugins/TaskAPI/TaskMessage'
 export enum Decision {
     Review = 'Review',
     Reject = 'Reject',
-    Revise = 'Revise'
+    Revise = 'Revise',
+    None = 'None',
 }
 
 export interface LogData {

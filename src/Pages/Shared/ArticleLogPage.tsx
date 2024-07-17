@@ -4,9 +4,12 @@ import { SendPostRequest } from '../../Common/SendPost';
 import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
 import { ReadTaskAuthorMessage } from 'Plugins/TaskAPI/ReadTaskAuthorMessage';
 import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
+import { CheckTaskIdentityMessage } from 'Plugins/TaskAPI/CheckTaskIdentityMessage';
 import { useUserStore } from '../../Store/UserStore';
 import { CommentSystem } from './CommentSystem';
 import { ReadTaskPDFMessage } from 'Plugins/TaskAPI/ReadTaskPDFMessage';
+import { DecisionLog } from './DecisionLog';
+import { ReviewLog } from './ReviewLog';
 
 interface ArticleInfo {
     title: string;
@@ -26,69 +29,91 @@ export function ArticleLogPage() {
     const [articleInfo, setArticleInfo] = useState<ArticleInfo | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [userRole, setUserRole] = useState<string>('');
+    const [editorPeriodical, setEditorPeriodical] = useState<string>('');
 
     useEffect(() => {
-        async function fetchArticleInfo() {
+        async function fetchData() {
             try {
                 setLoading(true);
                 setError(null);
 
-                // Fetch task info
-                const [
-                    taskPeriodicalResponse,
-                    taskAreaResponse,
-                    tldrResponse,
-                    abstractResponse,
-                    keywordsResponse,
-                    authorsResponse,
-                    pdfResponse
-                ] = await Promise.all([
-                    SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_periodical')),
-                    SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_area')),
-                    SendPostRequest(new ReadTaskInfoMessage(taskName, 'tldr')),
-                    SendPostRequest(new ReadTaskInfoMessage(taskName, 'abstract')),
-                    SendPostRequest(new ReadTaskInfoMessage(taskName, 'keyword')),
-                    SendPostRequest(new ReadTaskAuthorMessage(taskName)),
-                    SendPostRequest(new ReadTaskPDFMessage(taskName))
+                const [articleInfoResult, userRoleResult] = await Promise.all([
+                    fetchArticleInfo(),
+                    checkUserRole()
                 ]);
 
-                if (!taskPeriodicalResponse.data || !taskAreaResponse.data || !tldrResponse.data ||
-                    !abstractResponse.data || !keywordsResponse.data || !authorsResponse.data || !pdfResponse.data) {
-                    throw new Error("Failed to fetch task info");
+                setArticleInfo(articleInfoResult);
+                setUserRole(userRoleResult);
+
+                if (userRoleResult === 'editor') {
+                    const editorResponse = await SendPostRequest(new ReadTaskInfoMessage(username, 'periodical'));
+                    if (editorResponse && editorResponse.data) {
+                        setEditorPeriodical(editorResponse.data);
+                    }
                 }
-
-                const authorsData = JSON.parse(authorsResponse.data) as { userName: string }[];
-                const authorUsernames = authorsData.map(author => author.userName);
-
-                // Fetch real names for all authors
-                const authorNamesPromises = authorUsernames.map(async (userName) => {
-                    const surNameResponse = await SendPostRequest(new UserReadInfoMessage(userName, 'sur_name'));
-                    const lastNameResponse = await SendPostRequest(new UserReadInfoMessage(userName, 'last_name'));
-                    return `${surNameResponse.data} ${lastNameResponse.data}`;
-                });
-
-                const authorNames = await Promise.all(authorNamesPromises);
-
-                setArticleInfo({
-                    title: taskName,
-                    authors: authorNames,
-                    taskPeriodical: taskPeriodicalResponse.data,
-                    taskArea: taskAreaResponse.data,
-                    tldr: tldrResponse.data,
-                    abstract: abstractResponse.data,
-                    keywords: keywordsResponse.data,
-                    pdfBase64: pdfResponse.data
-                });
             } catch (err) {
-                setError("An error occurred while fetching article information.");
+                setError("An error occurred while fetching information.");
                 console.error(err);
             } finally {
                 setLoading(false);
             }
         }
 
-        fetchArticleInfo();
-    }, [taskName]);
+        fetchData();
+    }, [taskName, username]);
+
+    async function fetchArticleInfo(): Promise<ArticleInfo> {
+        const [
+            taskPeriodicalResponse,
+            taskAreaResponse,
+            tldrResponse,
+            abstractResponse,
+            keywordsResponse,
+            authorsResponse,
+            pdfResponse
+        ] = await Promise.all([
+            SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_periodical')),
+            SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_area')),
+            SendPostRequest(new ReadTaskInfoMessage(taskName, 'tldr')),
+            SendPostRequest(new ReadTaskInfoMessage(taskName, 'abstract')),
+            SendPostRequest(new ReadTaskInfoMessage(taskName, 'keyword')),
+            SendPostRequest(new ReadTaskAuthorMessage(taskName)),
+            SendPostRequest(new ReadTaskPDFMessage(taskName))
+        ]);
+
+        if (!taskPeriodicalResponse.data || !taskAreaResponse.data || !tldrResponse.data ||
+            !abstractResponse.data || !keywordsResponse.data || !authorsResponse.data || !pdfResponse.data) {
+            throw new Error("Failed to fetch task info");
+        }
+
+        const authorsData = JSON.parse(authorsResponse.data) as { userName: string }[];
+        const authorUsernames = authorsData.map(author => author.userName);
+
+        const authorNamesPromises = authorUsernames.map(async (userName) => {
+            const surNameResponse = await SendPostRequest(new UserReadInfoMessage(userName, 'sur_name'));
+            const lastNameResponse = await SendPostRequest(new UserReadInfoMessage(userName, 'last_name'));
+            return `${surNameResponse.data} ${lastNameResponse.data}`;
+        });
+
+        const authorNames = await Promise.all(authorNamesPromises);
+
+        return {
+            title: taskName,
+            authors: authorNames,
+            taskPeriodical: taskPeriodicalResponse.data,
+            taskArea: taskAreaResponse.data,
+            tldr: tldrResponse.data,
+            abstract: abstractResponse.data,
+            keywords: keywordsResponse.data,
+            pdfBase64: pdfResponse.data
+        };
+    }
+
+    async function checkUserRole(): Promise<string> {
+        const response = await SendPostRequest(new CheckTaskIdentityMessage(taskName, username, ''));
+        return response.data;
+    }
 
     const handleDownloadPDF = () => {
         if (articleInfo && articleInfo.pdfBase64) {
@@ -122,6 +147,10 @@ export function ArticleLogPage() {
     if (!articleInfo) {
         return <div className="text-center mt-8">No article information found.</div>;
     }
+
+    const canDecide = userRole === 'editor' && editorPeriodical === articleInfo.taskPeriodical;
+    const canReview = userRole === 'reviewer';
+    const canComment = true; // Everyone can comment
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
@@ -189,8 +218,10 @@ export function ArticleLogPage() {
                         </div>
                     </div>
 
-                    {/* 评论系统 */}
-                    <CommentSystem taskName={taskName} />
+                    {/* 日志系统 */}
+                    {canDecide && <DecisionLog taskName={taskName} onLogAdded={() => {}} />}
+                    {canReview && <ReviewLog taskName={taskName} onLogAdded={() => {}} />}
+                    {canComment && <CommentSystem taskName={taskName} />}
                 </div>
             </main>
         </div>
