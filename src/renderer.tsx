@@ -17,6 +17,7 @@ import { UserPersonalArticlePage } from 'Pages/User/UserPersonalArticlePage'
 import './index.css';
 import { ArticleLogPage } from 'Pages/Shared/ArticleLogPage'
 import { EditorArticlesPage } from 'Pages/Editor/EditorArticlesPage'
+import { ArticleSearchPage } from 'Pages/Shared/ArticleSearchPage'
 
 const Layout: React.FC = () => {
     return (
@@ -37,6 +38,7 @@ const Layout: React.FC = () => {
                 <Route path="/UserMain/UserSubmitArticle" exact component={UserSubmitArticle} />
                 <Route path="/UserMain/UserPersonalPeriodical" exact component={UserPersonalArticlePage} />
                 <Route path="/article-log/:taskName" component={ArticleLogPage} />
+                <Route path="/ArticleSearch" exact component={ArticleSearchPage} />
             </Switch>
         </HashRouter>
     );

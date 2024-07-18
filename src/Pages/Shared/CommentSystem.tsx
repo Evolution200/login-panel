@@ -55,28 +55,70 @@ export function CommentSystem({ taskName }: CommentSystemProps) {
         }
     };
 
+    const getLogTypeColor = (logType: string) => {
+        switch (logType) {
+            case 'Decision':
+                return 'text-blue-700';
+            case 'Review':
+                return 'text-green-700';
+            case 'Comment':
+                return 'text-purple-700';
+            default:
+                return 'text-gray-700';
+        }
+    };
+
+    const renderLog = (log: LogData) => {
+        const logTypeColor = getLogTypeColor(log.logType);
+        return (
+            <div className="bg-gray-100 p-4 rounded-lg border border-gray-300 mb-4">
+                <h3 className={`text-xl font-bold mb-2 ${logTypeColor}`}>{log.logType}</h3>
+                {log.logType === 'Decision' && (
+                    <div className="mb-2">
+                        <span className="font-semibold text-blue-600">Decision:</span> {log.decision}
+                    </div>
+                )}
+                {log.logType === 'Review' && (
+                    <div className="mb-2">
+                        <div><span className="font-semibold text-green-600">Rating:</span> {log.rating}</div>
+                        <div><span className="font-semibold text-green-600">Confidence:</span> {log.confidence}</div>
+                    </div>
+                )}
+                <div className="mb-2">
+                    <span className="font-semibold text-red-400">Comment:</span>
+                    <p className="whitespace-pre-wrap">{log.comment}</p>
+                </div>
+                {log.reasonsToAccept && (
+                    <div className="mb-2">
+                        <span className="font-semibold text-green-600">Pros:</span>
+                        <ul className="list-disc list-inside pl-4">
+                            {log.reasonsToAccept.split('\n').map((reason, index) => (
+                                <li key={index}>{reason}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+                {log.reasonsToReject && (
+                    <div className="mb-2">
+                        <span className="font-semibold text-red-600">Cons:</span>
+                        <ul className="list-disc list-inside pl-4">
+                            {log.reasonsToReject.split('\n').map((reason, index) => (
+                                <li key={index}>{reason}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
+        );
+    };
+
     return (
         <div className="mt-8">
-            <h3 className="text-2xl font-semibold mb-4">Comments and Reviews</h3>
+            <h3 className="text-2xl font-semibold mb-4">All Comments and Reviews</h3>
             <div className="space-y-4">
                 {logs.map((log, index) => (
-                    <div key={index} className="bg-gray-100 p-4 rounded-lg">
-                        <p className="font-semibold">{log.userName} - {log.logType}</p>
-                        <p>{log.comment}</p>
-                        {log.logType === 'Decision' && log.decision !== Decision.None && (
-                            <>
-                                <p>Decision: {log.decision}</p>
-                                <p>Reasons to Accept: {log.reasonsToAccept}</p>
-                                <p>Reasons to Reject: {log.reasonsToReject}</p>
-                                <p>Questions to Authors: {log.questionsToAuthors}</p>
-                            </>
-                        )}
-                        {log.logType === 'Review' && (
-                            <>
-                                <p>Rating: {log.rating}</p>
-                                <p>Confidence: {log.confidence}</p>
-                            </>
-                        )}
+                    <div key={index}>
+                        {renderLog(log)}
                     </div>
                 ))}
             </div>

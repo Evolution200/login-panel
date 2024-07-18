@@ -54,28 +54,34 @@ export function UserLayout({ children }: UserLayoutProps) {
                     <aside className="w-64 pr-8">
                         <nav className="space-y-1">
                             <button
-                                onClick={() => history.push("/UserMain")}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive("/UserMain") ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                onClick={() => history.push('/UserMain')}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
                             >
                                 Main Page
                             </button>
                             <button
-                                onClick={() => history.push("/UserMain/UserSubmitArticle")}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive("/UserMain/UserSubmitArticle") ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                onClick={() => history.push('/UserMain/UserSubmitArticle')}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserSubmitArticle') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
                             >
                                 Submit Article
                             </button>
                             <button
-                                onClick={() => history.push("/UserMain/UserPersonalPeriodical")}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive("/UserMain/UserPersonalPeriodical") ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                onClick={() => history.push('/UserMain/UserPersonalPeriodical')}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserPersonalPeriodical') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
                             >
                                 My Articles
                             </button>
                             <button
-                                onClick={() => history.push("/UserMain/UserInfo")}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive("/UserMain/UserInfo") ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                onClick={() => history.push('/UserMain/UserInfo')}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserInfo') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
                             >
                                 Personal Information
+                            </button>
+                            <button
+                                onClick={() => history.push('/ArticleSearch')}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/ArticleSearch') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                            >
+                                Search Articles
                             </button>
                         </nav>
                     </aside>

@@ -6,10 +6,9 @@ import { ReadTaskAuthorMessage } from 'Plugins/TaskAPI/ReadTaskAuthorMessage';
 import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
 import { CheckTaskIdentityMessage } from 'Plugins/TaskAPI/CheckTaskIdentityMessage';
 import { useUserStore } from '../../Store/UserStore';
-import { CommentSystem } from './CommentSystem';
+import { RoleBasedView } from './RoleBasedView';
 import { ReadTaskPDFMessage } from 'Plugins/TaskAPI/ReadTaskPDFMessage';
-import { DecisionLog } from './DecisionLog';
-import { ReviewLog } from './ReviewLog';
+import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
 
 interface ArticleInfo {
     title: string;
@@ -24,7 +23,7 @@ interface ArticleInfo {
 
 export function ArticleLogPage() {
     const { taskName } = useParams<{ taskName: string }>();
-    const { username, clearUser } = useUserStore();
+    const { username, role, clearUser } = useUserStore();
     const history = useHistory();
     const [articleInfo, setArticleInfo] = useState<ArticleInfo | null>(null);
     const [loading, setLoading] = useState(true);
@@ -47,7 +46,7 @@ export function ArticleLogPage() {
                 setUserRole(userRoleResult);
 
                 if (userRoleResult === 'editor') {
-                    const editorResponse = await SendPostRequest(new ReadTaskInfoMessage(username, 'periodical'));
+                    const editorResponse = await SendPostRequest(new EditorReadInfoMessage(username, 'periodical'));
                     if (editorResponse && editorResponse.data) {
                         setEditorPeriodical(editorResponse.data);
                     }
@@ -111,8 +110,13 @@ export function ArticleLogPage() {
     }
 
     async function checkUserRole(): Promise<string> {
-        const response = await SendPostRequest(new CheckTaskIdentityMessage(taskName, username, ''));
-        return response.data;
+        if (role =='user'){
+            const response = await SendPostRequest(new CheckTaskIdentityMessage(taskName, username, ''));
+            return response.data;
+        }
+        if (role =='editor'){
+            return 'editor'
+        }
     }
 
     const handleDownloadPDF = () => {
@@ -148,10 +152,6 @@ export function ArticleLogPage() {
         return <div className="text-center mt-8">No article information found.</div>;
     }
 
-    const canDecide = userRole === 'editor' && editorPeriodical === articleInfo.taskPeriodical;
-    const canReview = userRole === 'reviewer';
-    const canComment = true; // Everyone can comment
-
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100">
             <header className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
@@ -185,12 +185,7 @@ export function ArticleLogPage() {
                 </button>
 
                 <div className="space-y-8">
-                    <div className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg rounded-lg overflow-hidden">
-                        <div className="px-4 py-5 sm:p-6">
-                            <h2 className="text-3xl font-extrabold text-white">Article Details</h2>
-                        </div>
-                    </div>
-
+                    {/* 文章信息显示 */}
                     <div className="bg-white shadow-xl rounded-lg overflow-hidden">
                         <div className="p-8 space-y-6">
                             <h1 className="text-3xl font-bold text-gray-900">{articleInfo.title}</h1>
@@ -218,10 +213,13 @@ export function ArticleLogPage() {
                         </div>
                     </div>
 
-                    {/* 日志系统 */}
-                    {canDecide && <DecisionLog taskName={taskName} onLogAdded={() => {}} />}
-                    {canReview && <ReviewLog taskName={taskName} onLogAdded={() => {}} />}
-                    {canComment && <CommentSystem taskName={taskName} />}
+                    {/* 基于角色的视图 */}
+                    <RoleBasedView
+                        userRole={userRole}
+                        taskName={taskName}
+                        editorPeriodical={editorPeriodical}
+                        articlePeriodical={articleInfo.taskPeriodical}
+                    />
                 </div>
             </main>
         </div>

@@ -4,7 +4,6 @@ import { EditorLayout } from './EditorLayout';
 import { useUserStore } from '../../Store/UserStore';
 import { useEditorTaskStore } from '../../Store/EditorTaskStore';
 
-// 使用枚举定义可能的状态类型
 enum TaskState {
     Init = 'init',
     InProgress = 'inProgress',
@@ -12,7 +11,6 @@ enum TaskState {
     Rejected = 'rejected'
 }
 
-// 使用 Record 类型来定义 stateColorMap，现在使用 TaskState 枚举
 const stateColorMap: Record<TaskState, string> = {
     [TaskState.Init]: 'bg-blue-100 text-blue-800',
     [TaskState.InProgress]: 'bg-yellow-100 text-yellow-800',
