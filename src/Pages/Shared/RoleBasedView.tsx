@@ -9,7 +9,8 @@ interface RoleBasedViewProps {
     taskName: string;
     editorPeriodical: string;
     articlePeriodical: string;
-    articleState: string;  // 添加这个属性
+    articleState: string;
+    refreshPage: () => void;
 }
 
 export function RoleBasedView({
@@ -17,10 +18,11 @@ export function RoleBasedView({
                                   taskName,
                                   editorPeriodical,
                                   articlePeriodical,
-                                  articleState
+                                  articleState,
+                                  refreshPage
                               }: RoleBasedViewProps) {
     const canDecide = userRole === 'editor' && editorPeriodical === articlePeriodical;
-    const canReview = userRole === 'reviewer' && articleState === 'Review';  // 修改这行
+    const canReview = userRole === 'reviewer' && articleState === 'Review';
     const isAuthor = userRole === 'author';
 
     return (
@@ -31,17 +33,17 @@ export function RoleBasedView({
             {canDecide && (
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold mb-4">Editor Decision</h2>
-                    <DecisionLog taskName={taskName} onLogAdded={() => {}} />
+                    <DecisionLog
+                        taskName={taskName}
+                        onLogAdded={refreshPage}
+                        articleState={articleState}
+                    />
                 </div>
             )}
-            {canReview ? (
+            {canReview && (
                 <div className="mb-8">
                     <h2 className="text-2xl font-bold mb-4">Reviewer Feedback</h2>
                     <ReviewLog taskName={taskName} onLogAdded={() => {}} />
-                </div>
-            ) : userRole === 'reviewer' && (
-                <div className="mb-8 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
-                    The article is not in the Review state. You cannot submit a review at this time.
                 </div>
             )}
         </div>

@@ -49,7 +49,6 @@ export function ArticleSearchPage() {
         history.goBack();
     };
 
-
     const getDisplayState = (state: string): string => {
         return state === TaskState.Init ? 'Initial Review' : state;
     };
@@ -125,7 +124,6 @@ export function ArticleSearchPage() {
                                     <tr>
                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Article Name</th>
                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodical</th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Authors</th>
                                         <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State</th>
                                     </tr>
                                     </thead>
@@ -138,7 +136,6 @@ export function ArticleSearchPage() {
                                                 </Link>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{article.periodicalName}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{article.authors.join(', ')}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-black">
                                                 <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStateColorClass(article.state)}`}>
                                                     {getDisplayState(article.state)}

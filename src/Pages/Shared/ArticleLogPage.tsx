@@ -1,9 +1,8 @@
+// ArticleLogPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { SendPostRequest } from '../../Common/SendPost';
 import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
-import { ReadTaskAuthorMessage } from 'Plugins/TaskAPI/ReadTaskAuthorMessage';
-import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
 import { CheckTaskIdentityMessage } from 'Plugins/TaskAPI/CheckTaskIdentityMessage';
 import { useUserStore } from '../../Store/UserStore';
 import { RoleBasedView } from './RoleBasedView';
@@ -12,7 +11,6 @@ import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
 
 interface ArticleInfo {
     title: string;
-    authors: string[];
     taskPeriodical: string;
     taskArea: string;
     tldr: string;
@@ -39,7 +37,11 @@ export function ArticleLogPage() {
     const [error, setError] = useState<string | null>(null);
     const [userRole, setUserRole] = useState<string>('');
     const [editorPeriodical, setEditorPeriodical] = useState<string>('');
-    const [articleState, setArticleState] = useState<string>('');
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const refreshPage = () => {
+        setRefreshKey(prevKey => prevKey + 1);
+    };
 
     useEffect(() => {
         async function fetchData() {
@@ -47,10 +49,9 @@ export function ArticleLogPage() {
                 setLoading(true);
                 setError(null);
 
-                const [articleInfoResult, userRoleResult,] = await Promise.all([
+                const [articleInfoResult, userRoleResult] = await Promise.all([
                     fetchArticleInfo(),
                     checkUserRole()
-
                 ]);
 
                 setArticleInfo(articleInfoResult);
@@ -71,7 +72,7 @@ export function ArticleLogPage() {
         }
 
         fetchData();
-    }, [taskName, username]);
+    }, [taskName, username, refreshKey]);
 
     async function fetchArticleInfo(): Promise<ArticleInfo> {
         const [
@@ -80,39 +81,25 @@ export function ArticleLogPage() {
             tldrResponse,
             abstractResponse,
             keywordsResponse,
-            authorsResponse,
             pdfResponse,
-            stateResponse,
+            stateResponse
         ] = await Promise.all([
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_periodical')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_area')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'tldr')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'abstract')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'keyword')),
-            SendPostRequest(new ReadTaskAuthorMessage(taskName)),
             SendPostRequest(new ReadTaskPDFMessage(taskName)),
-            SendPostRequest(new ReadTaskInfoMessage(taskName, 'state')),
+            SendPostRequest(new ReadTaskInfoMessage(taskName, 'state'))
         ]);
 
         if (!taskPeriodicalResponse.data || !taskAreaResponse.data || !tldrResponse.data ||
-            !abstractResponse.data || !keywordsResponse.data || !authorsResponse.data || !pdfResponse.data) {
+            !abstractResponse.data || !keywordsResponse.data || !pdfResponse.data || !stateResponse.data) {
             throw new Error("Failed to fetch task info");
         }
 
-        const authorsData = JSON.parse(authorsResponse.data) as { userName: string }[];
-        const authorUsernames = authorsData.map(author => author.userName);
-
-        const authorNamesPromises = authorUsernames.map(async (userName) => {
-            const surNameResponse = await SendPostRequest(new UserReadInfoMessage(userName, 'sur_name'));
-            const lastNameResponse = await SendPostRequest(new UserReadInfoMessage(userName, 'last_name'));
-            return `${surNameResponse.data} ${lastNameResponse.data}`;
-        });
-
-        const authorNames = await Promise.all(authorNamesPromises);
-
         return {
             title: taskName,
-            authors: authorNames,
             taskPeriodical: taskPeriodicalResponse.data,
             taskArea: taskAreaResponse.data,
             tldr: tldrResponse.data,
@@ -123,14 +110,16 @@ export function ArticleLogPage() {
         };
     }
 
+
     async function checkUserRole(): Promise<string> {
-        if (role =='user'){
+        if (role == 'user') {
             const response = await SendPostRequest(new CheckTaskIdentityMessage(taskName, username));
             return response.data;
         }
-        if (role =='editor'){
+        if (role == 'editor') {
             return 'editor'
         }
+        return '';
     }
 
     const handleDownloadPDF = () => {
@@ -206,6 +195,7 @@ export function ArticleLogPage() {
 
                 <div className="space-y-12">
                     {/* 文章信息显示 */}
+
                     <div
                         className="bg-white shadow-xl rounded-lg overflow-hidden border border-indigo-200 max-w-4xl mx-auto">
                         <div className="p-8 space-y-2">
@@ -283,6 +273,7 @@ export function ArticleLogPage() {
                         editorPeriodical={editorPeriodical}
                         articlePeriodical={articleInfo.taskPeriodical}
                         articleState={articleInfo.state}
+                        refreshPage={refreshPage}
                     />
                 </div>
             </main>
