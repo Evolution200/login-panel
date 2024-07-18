@@ -159,13 +159,12 @@ export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemPro
 
         return (
             <div className="bg-gray-100 p-4 rounded-lg border border-gray-300 mb-4">
-                <div className="min-h-[200px]">
-                    <h3 className={`text-xl font-bold mb-2 ${logTypeColor}`}>{log.logType}</h3>
-                    <p className="text-sm text-gray-600 mb-2">By: {displayName}</p>
+                <div className="min-h-[200px] space-y-6">
+                    <span className={`className="inline-block text-center text-2xl font-semibold round-full mb-2 border-2 border-indigo-200 bg-indigo-200 rounded-xl px-2 py-1"> ${logTypeColor}`}>{log.logType}</span>
+                    <span className="text-md text-gray-600 mb-2 italic ml-4">By: {displayName}</span>
                     {log.logType === 'Decision' && (
                         <div className="mb-2">
-                            <span className="font-semibold text-blue-600">Decision:</span> {log.decision}
-                        </div>
+                            <span className="text-md font-semibold text-red-600">Decision:</span> {log.decision}</div>
                     )}
                     {log.logType === 'Review' && (
                         <div className="mb-2">
@@ -174,7 +173,7 @@ export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemPro
                         </div>
                     )}
                     <div className="mb-2">
-                        <span className="font-semibold text-gray-700">Comment:</span>
+                        <span className="font-semibold text-indigo-700">Comment:</span>
                         <p className="whitespace-pre-wrap">{log.comment}</p>
                     </div>
                     {log.reasonsToAccept && (
