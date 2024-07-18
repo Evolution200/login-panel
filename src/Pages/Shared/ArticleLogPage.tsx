@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { SendPostRequest } from '../../Common/SendPost';
 import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
-import { ReadTaskAuthorMessage } from 'Plugins/TaskAPI/ReadTaskAuthorMessage';
-import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
 import { CheckTaskIdentityMessage } from 'Plugins/TaskAPI/CheckTaskIdentityMessage';
 import { useUserStore } from '../../Store/UserStore';
 import { RoleBasedView } from './RoleBasedView';
@@ -13,7 +11,6 @@ import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
 
 interface ArticleInfo {
     title: string;
-    authors: string[];
     taskPeriodical: string;
     taskArea: string;
     tldr: string;
@@ -76,7 +73,6 @@ export function ArticleLogPage() {
             tldrResponse,
             abstractResponse,
             keywordsResponse,
-            authorsResponse,
             pdfResponse,
             stateResponse
         ] = await Promise.all([
@@ -85,30 +81,17 @@ export function ArticleLogPage() {
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'tldr')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'abstract')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'keyword')),
-            SendPostRequest(new ReadTaskAuthorMessage(taskName)),
             SendPostRequest(new ReadTaskPDFMessage(taskName)),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'state'))
         ]);
 
         if (!taskPeriodicalResponse.data || !taskAreaResponse.data || !tldrResponse.data ||
-            !abstractResponse.data || !keywordsResponse.data || !authorsResponse.data || !pdfResponse.data || !stateResponse.data) {
+            !abstractResponse.data || !keywordsResponse.data || !pdfResponse.data || !stateResponse.data) {
             throw new Error("Failed to fetch task info");
         }
 
-        const authorsData = JSON.parse(authorsResponse.data) as { userName: string }[];
-        const authorUsernames = authorsData.map(author => author.userName);
-
-        const authorNamesPromises = authorUsernames.map(async (userName) => {
-            const surNameResponse = await SendPostRequest(new UserReadInfoMessage(userName, 'sur_name'));
-            const lastNameResponse = await SendPostRequest(new UserReadInfoMessage(userName, 'last_name'));
-            return `${surNameResponse.data} ${lastNameResponse.data}`;
-        });
-
-        const authorNames = await Promise.all(authorNamesPromises);
-
         return {
             title: taskName,
-            authors: authorNames,
             taskPeriodical: taskPeriodicalResponse.data,
             taskArea: taskAreaResponse.data,
             tldr: tldrResponse.data,
@@ -118,6 +101,7 @@ export function ArticleLogPage() {
             state: stateResponse.data
         };
     }
+
 
     async function checkUserRole(): Promise<string> {
         if (role == 'user') {
@@ -200,7 +184,6 @@ export function ArticleLogPage() {
                     <div className="bg-white shadow-xl rounded-lg overflow-hidden">
                         <div className="p-8 space-y-6">
                             <h1 className="text-3xl font-bold text-gray-900">{articleInfo.title}</h1>
-                            <p className="text-xl text-gray-700">Authors: {articleInfo.authors.join(', ')}</p>
                             <p className="text-lg text-gray-600">Journal: {articleInfo.taskPeriodical}</p>
                             <p className="text-lg text-gray-600">Research Area: {articleInfo.taskArea}</p>
                             <p className="text-lg text-gray-600">State: {articleInfo.state}</p>
