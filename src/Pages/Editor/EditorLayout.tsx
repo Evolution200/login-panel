@@ -40,7 +40,7 @@ export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
                                 <span className="px-2 py-1 bg-indigo-700 rounded-full text-xs font-medium">{role}</span>
                                 <button
                                     onClick={handleLogout}
-                                    className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                                    className="px-12 py-2 border border-transparent text-sm font-medium rounded-md text-red-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out transform hover:scale-105"
                                 >
                                     Logout
                                 </button>
@@ -58,9 +58,8 @@ export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
                                     onClick={() => history.push(item.path)}
                                     className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${
                                         currentPage === item.id
-                                            ? 'bg-indigo-100 text-indigo-900 shadow-inner'
-                                            : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'
-                                    } transition duration-150 ease-in-out`}
+                                            ? 'bg-indigo-200 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-white hover:text-indigo-900'
+                                    } transition duration-150 ease-in-out transform hover:scale-105`}
                                 >
                                     {item.name}
                                 </button>

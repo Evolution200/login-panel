@@ -142,16 +142,16 @@ export function EditorInfoPage() {
                             <div className="flex flex-col space-y-4">
                                 <h3 className="text-2xl font-semibold text-gray-800">{editorInfo.sur_name} {editorInfo.last_name}</h3>
                                 <p className="text-gray-600">{editorInfo.email}</p>
-                                <label htmlFor="photo-upload" className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out inline-block text-center">
+                                <label htmlFor="photo-upload" className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out inline-block text-center transform hover:scale-105">
                                     Update Profile Picture
                                 </label>
                                 <input id="photo-upload" type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
                             </div>
                         </div>
 
-                        <div className="bg-gray-50 rounded-lg p-6">
+                        <div className="bg-gray-50 rounded-lg p-6 space-y-8">
                             <h4 className="text-xl font-semibold text-gray-700 mb-4">Personal Information</h4>
-                            <dl className="space-y-6">
+                            <dl className="space-y-8">
                                 {editorProperties.map((prop) => (
                                     <div key={prop} className="flex flex-col sm:flex-row sm:justify-between">
                                         <dt className="text-sm font-medium text-gray-500 mb-1 sm:mb-0">{propertyDisplayNames[prop]}</dt>
