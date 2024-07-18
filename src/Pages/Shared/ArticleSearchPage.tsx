@@ -18,14 +18,17 @@ const stateColorMap: Record<TaskState, string> = {
 };
 
 export function ArticleSearchPage() {
-    const { periodicals, articles, loading, error, fetchPeriodicals, fetchArticlesByPeriodical, fetchArticlesByAuthor } = useArticleSearchStore();
+    const { periodicals, articles, loading, error, fetchPeriodicals, fetchArticlesByPeriodical, searchArticlesByName, resetSearch } = useArticleSearchStore();
     const [selectedPeriodical, setSelectedPeriodical] = useState('');
-    const [authorName, setAuthorName] = useState('');
+    const [articleName, setArticleName] = useState('');
     const history = useHistory();
 
     useEffect(() => {
         fetchPeriodicals();
-    }, [fetchPeriodicals]);
+        return () => {
+            resetSearch(); // Reset search when component unmounts
+        };
+    }, [fetchPeriodicals, resetSearch]);
 
     const handlePeriodicalSearch = () => {
         if (selectedPeriodical) {
@@ -33,11 +36,19 @@ export function ArticleSearchPage() {
         }
     };
 
-    const handleAuthorSearch = () => {
-        if (authorName) {
-            fetchArticlesByAuthor(authorName);
+    const handleArticleNameSearch = () => {
+        if (articleName) {
+            searchArticlesByName(articleName);
         }
     };
+
+    const handleBack = () => {
+        resetSearch();
+        setSelectedPeriodical('');
+        setArticleName('');
+        history.goBack();
+    };
+
 
     const getDisplayState = (state: string): string => {
         return state === TaskState.Init ? 'Initial Review' : state;
@@ -53,7 +64,7 @@ export function ArticleSearchPage() {
                 <div className="flex justify-between items-center">
                     <h2 className="text-3xl font-extrabold text-gray-900">Article Search</h2>
                     <button
-                        onClick={() => history.goBack()}
+                        onClick={handleBack}
                         className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                         Back
@@ -62,6 +73,25 @@ export function ArticleSearchPage() {
 
                 <div className="bg-white shadow-md rounded-lg overflow-hidden">
                     <div className="px-4 py-5 sm:p-6">
+                        <div className="mb-6">
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">Search by Article Name</h3>
+                            <div className="flex space-x-4">
+                                <input
+                                    type="text"
+                                    value={articleName}
+                                    onChange={(e) => setArticleName(e.target.value)}
+                                    placeholder="Enter article name"
+                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                />
+                                <button
+                                    onClick={handleArticleNameSearch}
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                >
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+
                         <div className="mb-6">
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Search by Periodical</h3>
                             <div className="flex space-x-4">
@@ -79,25 +109,6 @@ export function ArticleSearchPage() {
                                 </select>
                                 <button
                                     onClick={handlePeriodicalSearch}
-                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                >
-                                    Search
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="mb-6">
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Search by Author</h3>
-                            <div className="flex space-x-4">
-                                <input
-                                    type="text"
-                                    value={authorName}
-                                    onChange={(e) => setAuthorName(e.target.value)}
-                                    placeholder="Enter author name"
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                />
-                                <button
-                                    onClick={handleAuthorSearch}
                                     className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 >
                                     Search

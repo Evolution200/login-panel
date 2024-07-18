@@ -18,7 +18,8 @@ export function UserMainPage() {
 
     useEffect(() => {
         const submitted = tasks.length;
-        const inReview = tasks.filter(task => task.state !== 'accepted').length;
+        const inReview = tasks.filter(task =>
+            task.state !== 'Reject' && task.state !== 'Accepted' && task.state.toLowerCase() !== 'completed').length;
         setStats({ submitted, inReview });
     }, [tasks]);
 

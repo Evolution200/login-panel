@@ -108,6 +108,7 @@ export function EditorMainPage() {
                                     </svg>
                                     Manage Pending Reviews
                                 </button>
+
                             </div>
                         </div>
                     </div>

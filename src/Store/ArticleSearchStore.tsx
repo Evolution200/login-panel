@@ -5,7 +5,7 @@ import { ReadPeriodicalTaskListMessage } from 'Plugins/TaskAPI/ReadPeriodicalTas
 import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
 import { ReadTaskAuthorMessage } from 'Plugins/TaskAPI/ReadTaskAuthorMessage';
 import { FetchPeriodicals } from '../Common/FetchPeriodicals';
-import { ReadTaskListMessage } from 'Plugins/TaskAPI/ReadTaskListMessage';
+import { SearchTaskMessage } from 'Plugins/TaskAPI/SearchTaskMessage';
 
 interface Article {
     taskName: string;
@@ -21,8 +21,11 @@ interface ArticleSearchStore {
     error: string | null;
     fetchPeriodicals: () => Promise<void>;
     fetchArticlesByPeriodical: (periodical: string) => Promise<void>;
-    fetchArticlesByAuthor: (author: string) => Promise<void>;
+    searchArticlesByName: (articleName: string) => Promise<void>;
+    setArticles: (articles: Article[]) => void;
+    setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
+    resetSearch: () => void;
 }
 
 export const useArticleSearchStore = create<ArticleSearchStore>((set, get) => ({
@@ -80,31 +83,31 @@ export const useArticleSearchStore = create<ArticleSearchStore>((set, get) => ({
         }
     },
 
-    fetchArticlesByAuthor: async (author: string) => {
+    searchArticlesByName: async (articleName: string) => {
         set({ loading: true, error: null });
         try {
-            const taskListMessage = new ReadTaskListMessage(author);
-            const taskListResponse = await SendPostRequest(taskListMessage);
+            const searchMessage = new SearchTaskMessage(articleName);
+            const response = await SendPostRequest(searchMessage);
 
-            if (taskListResponse && taskListResponse.data) {
-                const tasksData = JSON.parse(taskListResponse.data) as { taskName: string }[];
+            if (response && response.data) {
+                const searchResults = JSON.parse(response.data) as { taskName: string }[];
                 const articles: Article[] = [];
 
-                for (const taskData of tasksData) {
+                for (const result of searchResults) {
                     const [periodicalResponse, stateResponse, authorsResponse] = await Promise.all([
-                        SendPostRequest(new ReadTaskInfoMessage(taskData.taskName, 'task_periodical')),
-                        SendPostRequest(new ReadTaskInfoMessage(taskData.taskName, 'state')),
-                        SendPostRequest(new ReadTaskAuthorMessage(taskData.taskName))
+                        SendPostRequest(new ReadTaskInfoMessage(result.taskName, 'task_periodical')),
+                        SendPostRequest(new ReadTaskInfoMessage(result.taskName, 'state')),
+                        SendPostRequest(new ReadTaskAuthorMessage(result.taskName))
                     ]);
 
-                    const periodical = periodicalResponse.data || '';
+                    const periodicalName = periodicalResponse.data || '';
                     const state = stateResponse.data || '';
                     const authorsData = JSON.parse(authorsResponse.data) as { userName: string }[];
                     const authors = authorsData.map(author => author.userName);
 
                     articles.push({
-                        taskName: taskData.taskName,
-                        periodicalName: periodical,
+                        taskName: result.taskName,
+                        periodicalName,
                         state,
                         authors
                     });
@@ -112,13 +115,23 @@ export const useArticleSearchStore = create<ArticleSearchStore>((set, get) => ({
 
                 set({ articles, loading: false });
             } else {
-                set({ error: 'Invalid response from server.', loading: false });
+                set({ error: 'No results found', loading: false });
             }
         } catch (error) {
-            console.error('Failed to load articles by author:', error);
-            set({ error: 'Failed to load articles. Please try again.', loading: false });
+            console.error('Failed to search articles:', error);
+            set({ error: 'Failed to search articles. Please try again.', loading: false });
         }
     },
 
+    setArticles: (articles: Article[]) => set({ articles }),
+    setLoading: (loading: boolean) => set({ loading }),
     setError: (error: string | null) => set({ error }),
+
+    resetSearch: () => {
+        set({
+            articles: [],
+            error: null,
+            loading: false
+        });
+    },
 }));

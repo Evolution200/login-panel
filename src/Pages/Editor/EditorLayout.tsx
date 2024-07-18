@@ -4,7 +4,7 @@ import { useUserStore } from '../../Store/UserStore';
 
 interface EditorLayoutProps {
     children: React.ReactNode;
-    currentPage: 'main' | 'info' | 'articles';
+    currentPage: 'main' | 'info' | 'articles' | 'search';
 }
 
 export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
@@ -19,7 +19,8 @@ export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
     const navItems = [
         { name: 'MainPage', path: '/EditorMain', id: 'main' },
         { name: 'Editor Information', path: '/EditorMain/EditorInfo', id: 'info' },
-        { name: 'Journal Articles', path: '/EditorMain/EditorArticles', id: 'articles' }
+        { name: 'Journal Articles', path: '/EditorMain/EditorArticles', id: 'articles' },
+        { name: 'Search Articles', path: '/ArticleSearch', id: 'search' }
     ];
 
     return (
@@ -70,7 +71,9 @@ export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
                         <div className="bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4 text-white">
                             <h2 className="text-xl font-semibold">
                                 {currentPage === 'main' ? 'Editor Dashboard' :
-                                    currentPage === 'info' ? 'Editor Information' : 'Journal Articles'}
+                                    currentPage === 'info' ? 'Editor Information' :
+                                        currentPage === 'articles' ? 'Journal Articles' :
+                                            'Search Articles'}
                             </h2>
                         </div>
                         <div className="p-6">
@@ -81,7 +84,7 @@ export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
 
                 <footer className="bg-indigo-800 text-white py-4">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm">
-                        © 2024 Socratic. All rights reserved.
+                        © {new Date().getFullYear()} Socratic. All rights reserved.
                     </div>
                 </footer>
             </div>
