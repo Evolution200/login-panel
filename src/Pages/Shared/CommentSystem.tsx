@@ -1,4 +1,3 @@
-// CommentSystem.tsx
 import React, { useState, useEffect } from 'react';
 import { SendPostRequest } from '../../Common/SendPost';
 import { AddLogMessage, LogData, Decision } from 'Plugins/TaskAPI/AddLogMessage';
@@ -16,6 +15,7 @@ export function CommentSystem({ taskName, isAuthor }: CommentSystemProps) {
     const [logs, setLogs] = useState<LogData[]>([]);
     const [newComment, setNewComment] = useState('');
     const [replyingTo, setReplyingTo] = useState<LogData | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string>('');
 
     useEffect(() => {
         fetchLogs();
@@ -35,10 +35,15 @@ export function CommentSystem({ taskName, isAuthor }: CommentSystemProps) {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewComment(e.target.value);
+        setErrorMessage('');
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (newComment.trim() === '') {
+            setErrorMessage('Comment cannot be empty');
+            return;
+        }
         try {
             const newLog: LogData = {
                 logType: 'Comment',
@@ -57,6 +62,7 @@ export function CommentSystem({ taskName, isAuthor }: CommentSystemProps) {
             fetchLogs();
         } catch (error) {
             console.error('Failed to add comment:', error);
+            setErrorMessage('Failed to add comment. Please try again.');
         }
     };
 
@@ -180,7 +186,14 @@ export function CommentSystem({ taskName, isAuthor }: CommentSystemProps) {
                     rows={4}
                     placeholder="Add a comment..."
                 ></textarea>
-                <button type="submit" className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                {errorMessage && (
+                    <p className="text-red-500 mt-1">{errorMessage}</p>
+                )}
+                <button
+                    type="submit"
+                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
+                    disabled={newComment.trim() === ''}
+                >
                     Add Comment
                 </button>
             </form>
