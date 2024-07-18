@@ -38,10 +38,10 @@ export function UserLayout({ children }: UserLayoutProps) {
                                 <h1 className="text-3xl font-bold">Socratic</h1>
                             </div>
                             <div className="flex items-center space-x-4">
-                                <span className="text-indigo-100">Welcome, {username}</span>
+                                <span className="text-indigo-100">Welcome, {username}!</span>
                                 <button
                                     onClick={handleLogout}
-                                    className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
+                                    className="px-12 py-2 border border-transparent text-sm font-medium rounded-md text-red-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out transform hover:scale-105"
                                 >
                                     Logout
                                 </button>
@@ -55,31 +55,31 @@ export function UserLayout({ children }: UserLayoutProps) {
                         <nav className="space-y-1">
                             <button
                                 onClick={() => history.push('/UserMain')}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain') ? 'bg-indigo-200 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-white hover:text-indigo-900'} transition duration-150 ease-in-out transform hover:scale-105`}
                             >
                                 Main Page
                             </button>
                             <button
                                 onClick={() => history.push('/UserMain/UserSubmitArticle')}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserSubmitArticle') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserSubmitArticle') ? 'bg-indigo-200 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-white hover:text-indigo-900'} transition duration-150 ease-in-out transform hover:scale-105`}
                             >
                                 Submit Article
                             </button>
                             <button
                                 onClick={() => history.push('/UserMain/UserPersonalPeriodical')}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserPersonalPeriodical') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserPersonalPeriodical') ? 'bg-indigo-200 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-white hover:text-indigo-900'} transition duration-150 ease-in-out transform hover:scale-105`}
                             >
                                 My Articles
                             </button>
                             <button
                                 onClick={() => history.push('/UserMain/UserInfo')}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserInfo') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserInfo') ? 'bg-indigo-200 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-white hover:text-indigo-900'} transition duration-150 ease-in-out transform hover:scale-105`}
                             >
                                 Personal Information
                             </button>
                             <button
                                 onClick={() => history.push('/ArticleSearch')}
-                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/ArticleSearch') ? 'bg-indigo-100 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-indigo-50 hover:text-indigo-900'} transition duration-150 ease-in-out`}
+                                className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/ArticleSearch') ? 'bg-indigo-200 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-white hover:text-indigo-900'} transition duration-150 ease-in-out transform hover:scale-105`}
                             >
                                 Search Articles
                             </button>
