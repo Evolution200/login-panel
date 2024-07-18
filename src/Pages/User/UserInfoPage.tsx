@@ -202,7 +202,7 @@ export function UserInfoPage() {
                             <div className="flex flex-col space-y-4">
                                 <h3 className="text-2xl font-semibold text-gray-800">{userInfo.sur_name} {userInfo.last_name}</h3>
                                 <p className="text-gray-600">{userInfo.email}</p>
-                                <label htmlFor="photo-upload" className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out inline-block text-center">
+                                <label htmlFor="photo-upload" className="cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-150 ease-in-out inline-block text-center transform hover:scale-105">
                                     Update Profile Picture
                                 </label>
                                 <input id="photo-upload" type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
@@ -210,8 +210,8 @@ export function UserInfoPage() {
                         </div>
 
                         <div className="bg-gray-50 rounded-lg p-6">
-                            <h4 className="text-xl font-semibold text-gray-700 mb-4">Personal Information</h4>
-                            <dl className="space-y-6">
+                            <h4 className="text-xl font-semibold text-gray-700 mb-8">Personal Information</h4>
+                            <dl className="space-y-8">
                                 {userProperties.map((prop) => (
                                     <div key={prop} className="flex flex-col sm:flex-row sm:justify-between">
                                         <dt className="text-sm font-medium text-gray-500 mb-1 sm:mb-0">{propertyDisplayNames[prop]}</dt>
@@ -243,8 +243,8 @@ export function UserInfoPage() {
                                                             className="px-2 py-1 border rounded"
                                                         />
                                                     )}
-                                                    <button onClick={handleSave} className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition duration-150">Save</button>
-                                                    <button onClick={handleCancel} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-150">Cancel</button>
+                                                    <button onClick={handleSave} className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition duration-150 transform hover:scale-105">Save</button>
+                                                    <button onClick={handleCancel} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-150 transform hover:scale-105">Cancel</button>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center justify-end space-x-2">
@@ -252,7 +252,7 @@ export function UserInfoPage() {
                                                     {['institute', 'expertise', 'email', 'password'].includes(prop) && (
                                                         <button
                                                             onClick={() => handleEdit(prop)}
-                                                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-150"
+                                                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-150 transform hover:scale-105"
                                                         >
                                                             Edit
                                                         </button>

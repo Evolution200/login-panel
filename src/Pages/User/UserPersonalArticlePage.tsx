@@ -88,12 +88,12 @@ export function UserPersonalArticlePage() {
                     <div className="px-4 py-5 sm:p-6">
                         {/* Add Author Form */}
                         <div className="mb-6">
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Add Author to Article</h3>
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">Add Co-Author to Article</h3>
                             <div className="flex space-x-4">
                                 <select
                                     value={selectedTask}
                                     onChange={(e) => setSelectedTask(e.target.value)}
-                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                                    className="mt-1 block w-[300px] pl-3 pr-10 py-2 text-base text-gray-600 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                 >
                                     <option value="">Select an article</option>
                                     {tasks.map((task) => (
@@ -107,13 +107,13 @@ export function UserPersonalArticlePage() {
                                     value={newAuthor}
                                     onChange={(e) => setNewAuthor(e.target.value)}
                                     placeholder="Enter username"
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    className="mt-1 block w-[200px] pl-3 pr-16 py-2 text-base text-gray-600 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                 />
                                 <button
                                     onClick={handleAddAuthor}
-                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    className="inline-flex justify-center items-center w-[160px] px-4 py-2 border border-transparent text-center font-bold rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:scale-105"
                                 >
-                                    Add Author
+                                    Add Co-Author
                                 </button>
                             </div>
                             {addAuthorError && (
@@ -128,15 +128,23 @@ export function UserPersonalArticlePage() {
                         {error && <p className="text-red-600">{error}</p>}
                         {!loading && !error && (
                             <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">My Tasks</h3>
+                                <table className="min-w-full divide-y divide-x divide-gray-200">
                                     <thead className="bg-gray-50">
                                     <tr>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task Name</th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodical</th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State</th>
+                                        <th scope="col"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task
+                                            Name
+                                        </th>
+                                        <th scope="col"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodical
+                                        </th>
+                                        <th scope="col"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State
+                                        </th>
                                     </tr>
                                     </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
+                                    <tbody className="bg-white divide-y divide-x divide-gray-200">
                                     {tasks.map((task, index) => (
                                         <tr key={index} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">

@@ -69,7 +69,7 @@ export function UserLayout({ children }: UserLayoutProps) {
                                 onClick={() => history.push('/UserMain/UserPersonalPeriodical')}
                                 className={`w-full text-left px-3 py-2 text-sm font-medium rounded-md ${isActive('/UserMain/UserPersonalPeriodical') ? 'bg-indigo-200 text-indigo-900 shadow-inner' : 'text-gray-600 hover:bg-white hover:text-indigo-900'} transition duration-150 ease-in-out transform hover:scale-105`}
                             >
-                                My Articles
+                                My Tasks
                             </button>
                             <button
                                 onClick={() => history.push('/UserMain/UserInfo')}
