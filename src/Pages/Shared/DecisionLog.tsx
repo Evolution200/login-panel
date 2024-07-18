@@ -17,10 +17,11 @@ export function DecisionLog({ taskName, onLogAdded }: DecisionLogProps) {
         logType: 'Decision',
         userName: username,
         comment: '',
-        decision: Decision.Review,
+        decision: Decision.None,
         reasonsToAccept: '',
         reasonsToReject: '',
         questionsToAuthors: '',
+        rebuttal: '',  // 确保这里是空字符串
         rating: 0,
         confidence: 0
     });
@@ -63,10 +64,11 @@ export function DecisionLog({ taskName, onLogAdded }: DecisionLogProps) {
                 decision: Decision.Review,
                 reasonsToAccept: '',
                 reasonsToReject: '',
-                questionsToAuthors: ''
+                questionsToAuthors: '',
+                rebuttal: '' // 添加这一行
             });
             onLogAdded();
-            setCanAddDecision(false);  // Disable further decisions after submission
+            setCanAddDecision(false);
         } catch (error) {
             console.error('Failed to add decision log:', error);
         }

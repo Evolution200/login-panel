@@ -15,6 +15,7 @@ export interface LogData {
     reasonsToAccept: string;
     reasonsToReject: string;
     questionsToAuthors: string;
+    rebuttal: string;
     rating: number;
     confidence: number;
 }

@@ -11,13 +11,14 @@ interface ReviewLogProps {
 export function ReviewLog({ taskName, onLogAdded }: ReviewLogProps) {
     const { username } = useUserStore();
     const [newLog, setNewLog] = useState<LogData>({
-        logType: 'Review',
+        logType: 'Decision', // 或 'Review'
         userName: username,
         comment: '',
         decision: Decision.None,
         reasonsToAccept: '',
         reasonsToReject: '',
         questionsToAuthors: '',
+        rebuttal: '',  // 确保这里是空字符串
         rating: 0,
         confidence: 0
     });
@@ -38,7 +39,8 @@ export function ReviewLog({ taskName, onLogAdded }: ReviewLogProps) {
                 ...newLog,
                 comment: '',
                 rating: 0,
-                confidence: 0
+                confidence: 0,
+                rebuttal: '' // 添加这一行
             });
             onLogAdded();
         } catch (error) {

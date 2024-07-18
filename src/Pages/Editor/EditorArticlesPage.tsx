@@ -22,6 +22,9 @@ export function EditorArticlesPage() {
     const { username } = useUserStore();
     const { tasks, editorPeriodical, loading, error, fetchEditorPeriodical, fetchTasks, addReviewer } = useEditorTaskStore();
     const [newReviewerUsername, setNewReviewerUsername] = useState('');
+    const [addReviewerMessage, setAddReviewerMessage] = useState('');
+    const [addReviewerStatus, setAddReviewerStatus] = useState<'success' | 'error' | null>(null);
+
 
     useEffect(() => {
         if (username) {
@@ -40,8 +43,32 @@ export function EditorArticlesPage() {
     const handleAddReviewer = async (e: React.FormEvent) => {
         e.preventDefault();
         if (newReviewerUsername) {
-            await addReviewer(newReviewerUsername);
-            setNewReviewerUsername('');
+            try {
+                const result = await addReviewer(newReviewerUsername);
+                if (result === "Successfully authorized") {
+                    setAddReviewerMessage("Reviewer added successfully.");
+                    setAddReviewerStatus('success');
+                    setNewReviewerUsername('');
+                } else if (result.includes("doesn't exist")) {
+                    setAddReviewerMessage("User doesn't exist.");
+                    setAddReviewerStatus('error');
+                } else if (result === "already authorized"){
+                    setAddReviewerMessage("User already authorized.");
+                    setAddReviewerStatus('error');
+                } else {
+                    setAddReviewerMessage("An error occurred while adding the reviewer.");
+                    setAddReviewerStatus('error');
+                }
+            } catch (error) {
+                setAddReviewerMessage("An error occurred while adding the reviewer.");
+                setAddReviewerStatus('error');
+            }
+
+            // Clear the message after 5 seconds
+            setTimeout(() => {
+                setAddReviewerMessage('');
+                setAddReviewerStatus(null);
+            }, 5000);
         }
     };
 
@@ -81,6 +108,12 @@ export function EditorArticlesPage() {
                                 Add Reviewer
                             </button>
                         </form>
+                        {addReviewerMessage && (
+                            <div
+                                className={`mt-3 text-sm ${addReviewerStatus === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                                {addReviewerMessage}
+                            </div>
+                        )}
                     </div>
                 </div>
 

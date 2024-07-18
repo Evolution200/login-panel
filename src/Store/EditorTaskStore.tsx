@@ -1,4 +1,3 @@
-// EditorTaskStore.tsx
 import create from 'zustand';
 import { SendPostRequest } from '../Common/SendPost';
 import { ReadPeriodicalTaskListMessage } from 'Plugins/TaskAPI/ReadPeriodicalTaskListMessage';
@@ -22,7 +21,7 @@ interface EditorTaskStore {
     fetchEditorPeriodical: (userName: string) => Promise<void>;
     fetchTasks: () => Promise<void>;
     setError: (error: string | null) => void;
-    addReviewer: (username: string) => Promise<void>;
+    addReviewer: (username: string) => Promise<string>;
 }
 
 export const useEditorTaskStore = create<EditorTaskStore>((set, get) => ({
@@ -88,11 +87,11 @@ export const useEditorTaskStore = create<EditorTaskStore>((set, get) => ({
 
     setError: (error: string | null) => set({ error }),
 
-    addReviewer: async (username: string) => {
+    addReviewer: async (username: string): Promise<string> => {
         const { editorPeriodical } = get();
         if (!editorPeriodical) {
             set({ error: 'Editor periodical not set.' });
-            return;
+            return "Editor periodical not set.";
         }
 
         set({ loading: true, error: null });
@@ -100,16 +99,16 @@ export const useEditorTaskStore = create<EditorTaskStore>((set, get) => ({
             const message = new AddReviewerMessage(username, editorPeriodical);
             const response = await SendPostRequest(message);
 
-            if (response && response.data) {
-                set({ loading: false });
-                // 可能需要刷新任务列表或其他相关数据
-                await get().fetchTasks();
-            } else {
-                set({ error: 'Failed to add reviewer. Please try again.', loading: false });
-            }
+            set({ loading: false });
+            // 刷新任务列表
+            await get().fetchTasks();
+
+            return response.data || "Successfully added reviewer";  // 确保总是返回一个字符串
         } catch (error) {
             console.error('Error adding reviewer:', error);
             set({ error: 'An error occurred while adding the reviewer. Please try again.', loading: false });
+            return "An error occurred while adding the reviewer.";
         }
     },
+
 }));

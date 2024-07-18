@@ -1,4 +1,3 @@
-// ArticleSearchStore.tsx
 import create from 'zustand';
 import { SendPostRequest } from '../Common/SendPost';
 import { ReadPeriodicalTaskListMessage } from 'Plugins/TaskAPI/ReadPeriodicalTaskListMessage';
@@ -6,6 +5,7 @@ import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
 import { ReadTaskAuthorMessage } from 'Plugins/TaskAPI/ReadTaskAuthorMessage';
 import { FetchPeriodicals } from '../Common/FetchPeriodicals';
 import { SearchTaskMessage } from 'Plugins/TaskAPI/SearchTaskMessage';
+import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
 
 interface Article {
     taskName: string;
@@ -63,13 +63,17 @@ export const useArticleSearchStore = create<ArticleSearchStore>((set, get) => ({
 
                     const state = stateResponse.data || '';
                     const authorsData = JSON.parse(authorsResponse.data) as { userName: string }[];
-                    const authors = authorsData.map(author => author.userName);
+                    const authorNames = await Promise.all(authorsData.map(async (author) => {
+                        const surNameResponse = await SendPostRequest(new UserReadInfoMessage(author.userName, 'sur_name'));
+                        const lastNameResponse = await SendPostRequest(new UserReadInfoMessage(author.userName, 'last_name'));
+                        return `${surNameResponse.data} ${lastNameResponse.data}`;
+                    }));
 
                     articles.push({
                         taskName: taskData.taskName,
                         periodicalName: periodical,
                         state,
-                        authors
+                        authors: authorNames
                     });
                 }
 
@@ -103,13 +107,17 @@ export const useArticleSearchStore = create<ArticleSearchStore>((set, get) => ({
                     const periodicalName = periodicalResponse.data || '';
                     const state = stateResponse.data || '';
                     const authorsData = JSON.parse(authorsResponse.data) as { userName: string }[];
-                    const authors = authorsData.map(author => author.userName);
+                    const authorNames = await Promise.all(authorsData.map(async (author) => {
+                        const surNameResponse = await SendPostRequest(new UserReadInfoMessage(author.userName, 'sur_name'));
+                        const lastNameResponse = await SendPostRequest(new UserReadInfoMessage(author.userName, 'last_name'));
+                        return `${surNameResponse.data} ${lastNameResponse.data}`;
+                    }));
 
                     articles.push({
                         taskName: result.taskName,
                         periodicalName,
                         state,
-                        authors
+                        authors: authorNames
                     });
                 }
 
