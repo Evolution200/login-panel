@@ -199,7 +199,7 @@ export function ArticleLogPage() {
                     <div
                         className="bg-white shadow-xl rounded-lg overflow-hidden border border-indigo-200 max-w-4xl mx-auto">
                         <div className="p-8 space-y-2">
-                            <div className="flex items-start">
+                            <div className="flex items-start justify-between">
                                 <div>
                                     <div className="flex items-center">
                                         <h2 className="text-4xl font-extrabold text-indigo-700">{articleInfo.title}</h2>
@@ -223,8 +223,8 @@ export function ArticleLogPage() {
                                             </g>
                                         </svg>
                                     </div>
-                                    <div
-                                        className="mt-2 text-xl text-gray-700 italic">{articleInfo.authors.join(', ')}</div>
+                                    {/*<div*/}
+                                    {/*    className="mt-2 text-xl text-gray-700 italic">{articleInfo.authors.join(', ')}</div>*/}
                                 </div>
                             </div>
 
