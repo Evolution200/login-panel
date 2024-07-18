@@ -8,9 +8,14 @@ import { useUserStore } from '../../Store/UserStore';
 import { RoleBasedView } from './RoleBasedView';
 import { ReadTaskPDFMessage } from 'Plugins/TaskAPI/ReadTaskPDFMessage';
 import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
+import { ReadAliasMessage } from 'Plugins/TaskAPI/ReadAliasMessage'
+import { ReadAliasTokenMessage } from 'Plugins/TaskAPI/ReadAliasTokenMessage'
+import { LogData } from 'Plugins/TaskAPI/AddLogMessage'
+import { ReadTaskAuthorMessage } from 'Plugins/TaskAPI/ReadTaskAuthorMessage'
 
 interface ArticleInfo {
     title: string;
+    authors: string[];
     taskPeriodical: string;
     taskArea: string;
     tldr: string;
@@ -18,6 +23,11 @@ interface ArticleInfo {
     keywords: string;
     pdfBase64: string;
     state: string;
+}
+
+interface AliasInfo {
+    alias: string;
+    aliasToken: string;
 }
 
 export function ArticleLogPage() {
@@ -34,6 +44,7 @@ export function ArticleLogPage() {
     const refreshPage = () => {
         setRefreshKey(prevKey => prevKey + 1);
     };
+
 
     useEffect(() => {
         async function fetchData() {
@@ -73,6 +84,7 @@ export function ArticleLogPage() {
             tldrResponse,
             abstractResponse,
             keywordsResponse,
+            authorsResponse,
             pdfResponse,
             stateResponse
         ] = await Promise.all([
@@ -81,6 +93,7 @@ export function ArticleLogPage() {
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'tldr')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'abstract')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'keyword')),
+            SendPostRequest(new ReadTaskAuthorMessage(taskName)),
             SendPostRequest(new ReadTaskPDFMessage(taskName)),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'state'))
         ]);
@@ -90,8 +103,20 @@ export function ArticleLogPage() {
             throw new Error("Failed to fetch task info");
         }
 
+        const authorsData = JSON.parse(authorsResponse.data) as { userName: string }[];
+        const authorUsernames = authorsData.map(author => author.userName);
+
+        const authorNamesPromises = authorUsernames.map(async (userName) => {
+            const AliasNameResponse = await SendPostRequest(new ReadAliasMessage(taskName, userName));
+            const AliasTokenNameResponse = await SendPostRequest(new ReadAliasTokenMessage(taskName, userName));
+            return `${AliasNameResponse.data} ${AliasTokenNameResponse.data}`;
+        });
+
+        const authorNames = await Promise.all(authorNamesPromises);
+
         return {
             title: taskName,
+            authors: authorNames,
             taskPeriodical: taskPeriodicalResponse.data,
             taskArea: taskAreaResponse.data,
             tldr: tldrResponse.data,
@@ -101,7 +126,6 @@ export function ArticleLogPage() {
             state: stateResponse.data
         };
     }
-
 
     async function checkUserRole(): Promise<string> {
         if (role == 'user') {
