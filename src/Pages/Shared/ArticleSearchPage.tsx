@@ -65,7 +65,7 @@ export function ArticleSearchPage() {
                     <h2 className="text-3xl font-extrabold text-gray-900">Article Search</h2>
                     <button
                         onClick={handleBack}
-                        className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:scale-105"
+                        className="inline-flex justify-center items-center w-[120px] px-4 py-2 border border-transparent text-center font-bold rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:scale-105"
                     >
                         Back
                     </button>
@@ -81,11 +81,11 @@ export function ArticleSearchPage() {
                                     value={articleName}
                                     onChange={(e) => setArticleName(e.target.value)}
                                     placeholder="Enter article name"
-                                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    className="mt-1 block w-[800px] pl-3 pr-16 py-2 text-base text-gray-600 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                 />
                                 <button
                                     onClick={handleArticleNameSearch}
-                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    className="inline-flex justify-center items-center w-[160px] px-4 py-2 border border-transparent text-center font-bold rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:scale-105"
                                 >
                                     Search
                                 </button>
@@ -98,7 +98,7 @@ export function ArticleSearchPage() {
                                 <select
                                     value={selectedPeriodical}
                                     onChange={(e) => setSelectedPeriodical(e.target.value)}
-                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                                    className="mt-1 block w-[800px] pl-3 pr-10 py-2 text-base text-gray-600 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                                 >
                                     <option value="">Select a periodical</option>
                                     {periodicals.map((periodical) => (
@@ -109,7 +109,7 @@ export function ArticleSearchPage() {
                                 </select>
                                 <button
                                     onClick={handlePeriodicalSearch}
-                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    className="inline-flex justify-center items-center w-[160px] px-4 py-2 border border-transparent text-center font-bold rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:scale-105"
                                 >
                                     Search
                                 </button>

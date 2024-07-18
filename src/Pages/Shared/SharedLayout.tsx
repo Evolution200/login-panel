@@ -69,7 +69,7 @@ export function SharedLayout({ children, showSidebar = true }: SharedLayoutProps
                                 <h1 className="text-3xl font-bold">Socratic</h1>
                             </div>
                             <div className="flex items-center space-x-4">
-                                <span className="text-indigo-100">Welcome, {username}</span>
+                                <span className="text-indigo-100">Welcome, {username}!</span>
                                 <button
                                     onClick={handleLogout}
                                     className="px-12 py-2 border border-transparent text-sm font-medium rounded-md text-red-600 bg-white hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out transform hover:scale-105"

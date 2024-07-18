@@ -68,7 +68,7 @@ export function SuperuserLayout({ children, currentPage }: SuperuserLayoutProps)
                                 <h1 className="text-3xl font-bold">Socratic</h1>
                             </div>
                             <div className="flex items-center space-x-4">
-                                <span className="text-indigo-100">Welcome, {username}</span>
+                                <span className="text-indigo-100">Welcome, {username}!</span>
                                 <span className="px-2 py-1 bg-indigo-700 rounded-full text-xs font-medium">{role}</span>
                                 <button
                                     onClick={handleLogout}
