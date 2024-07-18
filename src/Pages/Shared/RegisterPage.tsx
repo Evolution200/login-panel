@@ -32,10 +32,8 @@ export const RegisterPage: React.FC = () => {
     const loadPeriodicals = async () => {
         try {
             const periodicalsList = await FetchPeriodicals();
-            setPeriodicals(periodicalsList);
-            if (periodicalsList.length > 0) {
-                setPeriodical(periodicalsList[0]);
-            }
+            setPeriodicals(['Select your Periodical', ...periodicalsList]);
+            setPeriodical(''); // 将初始值设为空字符串
         } catch (error) {
             setErrorMessage('Failed to load periodicals. Please try again.');
         }
@@ -272,7 +270,9 @@ export const RegisterPage: React.FC = () => {
                                 className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                             >
                                 {periodicals.map((p, index) => (
-                                    <option key={index} value={p}>{p}</option>
+                                    <option key={index} value={index === 0 ? '' : p} disabled={index === 0}>
+                                        {p}
+                                    </option>
                                 ))}
                             </select>
                         </div>

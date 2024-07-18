@@ -65,7 +65,7 @@ export function ArticleSearchPage() {
                     <h2 className="text-3xl font-extrabold text-gray-900">Article Search</h2>
                     <button
                         onClick={handleBack}
-                        className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        className="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transform hover:scale-105"
                     >
                         Back
                     </button>
