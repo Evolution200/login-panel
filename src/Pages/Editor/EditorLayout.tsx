@@ -30,8 +30,38 @@ export function EditorLayout({ children, currentPage }: EditorLayoutProps) {
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
                         <div className="flex justify-between items-center">
                             <div className="flex items-center">
-                                <svg className="h-8 w-8 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                <svg width="48px" height="48px" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                    <path className="a"
+                                          d="M13.0875,22.4959V4.5l3.7377,3.738H33.3l3.4854-3.4858v6.9913m0,7.75v7.3452a11.7786,11.7786,0,0,1-11.8023,11.63H13.0883v-3.148"
+                                          stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <path className="a"
+                                          d="M13.0875,22.3336l-6.11,13.0756s4.9271,2.8562,8.1977-2.7955L17.18,33.32s2.9225-7.83-4.0928-10.9875Z"
+                                          stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <path className="a" d="M36.7858,26.8386l4.2367,8.695s-4.13,1.9434-7.0176-1.2319"
+                                          stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <path className="a" d="M18.8163,38.4691V43.5h2.7823" stroke="#FFFFFF"
+                                          strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <path className="a" d="M24.9835,38.4691V43.5h2.7824" stroke="#FFFFFF"
+                                          strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <path className="a" d="M29.6077,21.3312l-3.5532,2.0516V19.28Z" stroke="#FFFFFF"
+                                          strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <circle className="a" cx="20.6008" cy="15.5961" r="5.0056" stroke="#FFFFFF"
+                                            strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <circle className="a" cx="33.2832" cy="15.5961" r="5.0056" stroke="#FFFFFF"
+                                            strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <path className="a"
+                                          d="M28.2785,15.5961H25.586m-9.9907,0H13.0882a2.1869,2.1869,0,0,0-2.231,2.2312"
+                                          stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <path className="a" d="M25.8879,26.9683a1.7612,1.7612,0,1,1-3.5224,0"
+                                          stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <path className="a" d="M31.3564,26.9683a1.7613,1.7613,0,1,1-3.5225,0"
+                                          stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <path className="a" d="M28.7876,30.5215a1.7612,1.7612,0,1,1-3.5224,0"
+                                          stroke="#FFFFFF" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <circle className="a" cx="20.6008" cy="15.5961" r="1.8731" stroke="#FFFFFF"
+                                            strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                    <circle className="a" cx="33.2832" cy="15.5961" r="1.8731" stroke="#FFFFFF"
+                                            strokeLinecap="round" strokeLinejoin="round" fill="none" />
                                 </svg>
                                 <h1 className="text-3xl font-bold">Socratic</h1>
                             </div>
