@@ -118,7 +118,7 @@ export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemPro
                     </div>
                     {log.reasonsToAccept && (
                         <div className="mb-2">
-                            <span className="font-semibold text-green-600">Pros:</span>
+                            <span className="font-semibold text-green-600">Reasons to Accept:</span>
                             <ul className="list-disc list-inside pl-4">
                                 {log.reasonsToAccept.split('\n').map((reason, idx) => (
                                     <li key={idx}>{reason}</li>
@@ -128,10 +128,20 @@ export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemPro
                     )}
                     {log.reasonsToReject && (
                         <div className="mb-2">
-                            <span className="font-semibold text-red-600">Cons:</span>
+                            <span className="font-semibold text-red-600">Reasons to Reject:</span>
                             <ul className="list-disc list-inside pl-4">
                                 {log.reasonsToReject.split('\n').map((reason, idx) => (
                                     <li key={idx}>{reason}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                    {log.questionsToAuthors && (
+                        <div className="mb-2">
+                            <span className="font-semibold text-purple-600">Questions to Authors:</span>
+                            <ul className="list-disc list-inside pl-4">
+                                {log.questionsToAuthors.split('\n').map((question, idx) => (
+                                    <li key={idx}>{question}</li>
                                 ))}
                             </ul>
                         </div>
