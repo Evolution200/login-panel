@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { EditorLayout } from './EditorLayout';
 import { useUserStore } from '../../Store/UserStore';
@@ -20,7 +20,8 @@ const stateColorMap: Record<TaskState, string> = {
 
 export function EditorArticlesPage() {
     const { username } = useUserStore();
-    const { tasks, editorPeriodical, loading, error, fetchEditorPeriodical, fetchTasks } = useEditorTaskStore();
+    const { tasks, editorPeriodical, loading, error, fetchEditorPeriodical, fetchTasks, addReviewer } = useEditorTaskStore();
+    const [newReviewerUsername, setNewReviewerUsername] = useState('');
 
     useEffect(() => {
         if (username) {
@@ -36,15 +37,50 @@ export function EditorArticlesPage() {
         return stateColorMap[state as TaskState] || 'bg-gray-100 text-gray-800';
     };
 
+    const handleAddReviewer = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (newReviewerUsername) {
+            await addReviewer(newReviewerUsername);
+            setNewReviewerUsername('');
+        }
+    };
+
     return (
         <EditorLayout currentPage="articles">
             <div className="space-y-8">
-                <div className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg rounded-lg overflow-hidden">
+                <div
+                    className="bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 shadow-lg rounded-lg overflow-hidden">
                     <div className="px-4 py-5 sm:p-6">
                         <h2 className="text-3xl font-extrabold text-white">Articles in {editorPeriodical}</h2>
                         <p className="mt-1 text-xl text-white opacity-80">
                             Manage and review submitted articles
                         </p>
+                    </div>
+                </div>
+
+                <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <div className="px-4 py-5 sm:p-6">
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">Add Reviewer</h3>
+                        <form onSubmit={handleAddReviewer} className="mt-5 sm:flex sm:items-center">
+                            <div className="w-full sm:max-w-xs">
+                                <label htmlFor="reviewer" className="sr-only">Reviewer Username</label>
+                                <input
+                                    type="text"
+                                    name="reviewer"
+                                    id="reviewer"
+                                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    placeholder="Enter reviewer username"
+                                    value={newReviewerUsername}
+                                    onChange={(e) => setNewReviewerUsername(e.target.value)}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className="mt-3 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent shadow-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                            >
+                                Add Reviewer
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -57,24 +93,35 @@ export function EditorArticlesPage() {
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                     <tr>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Article Name</th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Authors</th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodical</th>
-                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State</th>
+                                        <th scope="col"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Article
+                                            Name
+                                        </th>
+                                        <th scope="col"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Authors
+                                        </th>
+                                        <th scope="col"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Periodical
+                                        </th>
+                                        <th scope="col"
+                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">State
+                                        </th>
                                     </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                     {tasks.map((task) => (
                                         <tr key={task.taskName} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                <Link to={`/article-log/${encodeURIComponent(task.taskName)}`} className="text-indigo-600 hover:text-indigo-900">
+                                                <Link to={`/article-log/${encodeURIComponent(task.taskName)}`}
+                                                      className="text-indigo-600 hover:text-indigo-900">
                                                     {task.taskName}
                                                 </Link>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{task.authors.join(', ')}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-black">{task.periodicalName}</td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStateColorClass(task.state)}`}>
+                                                <span
+                                                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStateColorClass(task.state)}`}>
                                                     {getDisplayState(task.state)}
                                                 </span>
                                             </td>

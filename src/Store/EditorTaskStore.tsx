@@ -5,6 +5,7 @@ import { ReadPeriodicalTaskListMessage } from 'Plugins/TaskAPI/ReadPeriodicalTas
 import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
 import { ReadTaskAuthorMessage } from 'Plugins/TaskAPI/ReadTaskAuthorMessage';
 import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
+import { AddReviewerMessage } from 'Plugins/EditorAPI/AddReviewerMessage';
 
 interface EditorTask {
     taskName: string;
@@ -21,6 +22,7 @@ interface EditorTaskStore {
     fetchEditorPeriodical: (userName: string) => Promise<void>;
     fetchTasks: () => Promise<void>;
     setError: (error: string | null) => void;
+    addReviewer: (username: string) => Promise<void>;
 }
 
 export const useEditorTaskStore = create<EditorTaskStore>((set, get) => ({
@@ -85,4 +87,29 @@ export const useEditorTaskStore = create<EditorTaskStore>((set, get) => ({
     },
 
     setError: (error: string | null) => set({ error }),
+
+    addReviewer: async (username: string) => {
+        const { editorPeriodical } = get();
+        if (!editorPeriodical) {
+            set({ error: 'Editor periodical not set.' });
+            return;
+        }
+
+        set({ loading: true, error: null });
+        try {
+            const message = new AddReviewerMessage(username, editorPeriodical);
+            const response = await SendPostRequest(message);
+
+            if (response && response.data) {
+                set({ loading: false });
+                // 可能需要刷新任务列表或其他相关数据
+                await get().fetchTasks();
+            } else {
+                set({ error: 'Failed to add reviewer. Please try again.', loading: false });
+            }
+        } catch (error) {
+            console.error('Error adding reviewer:', error);
+            set({ error: 'An error occurred while adding the reviewer. Please try again.', loading: false });
+        }
+    },
 }));
