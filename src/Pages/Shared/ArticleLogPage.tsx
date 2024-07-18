@@ -1,3 +1,4 @@
+// ArticleLogPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { SendPostRequest } from '../../Common/SendPost';
@@ -31,7 +32,11 @@ export function ArticleLogPage() {
     const [error, setError] = useState<string | null>(null);
     const [userRole, setUserRole] = useState<string>('');
     const [editorPeriodical, setEditorPeriodical] = useState<string>('');
-    const [articleState, setArticleState] = useState<string>('');
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const refreshPage = () => {
+        setRefreshKey(prevKey => prevKey + 1);
+    };
 
     useEffect(() => {
         async function fetchData() {
@@ -39,10 +44,9 @@ export function ArticleLogPage() {
                 setLoading(true);
                 setError(null);
 
-                const [articleInfoResult, userRoleResult,] = await Promise.all([
+                const [articleInfoResult, userRoleResult] = await Promise.all([
                     fetchArticleInfo(),
                     checkUserRole()
-
                 ]);
 
                 setArticleInfo(articleInfoResult);
@@ -63,7 +67,7 @@ export function ArticleLogPage() {
         }
 
         fetchData();
-    }, [taskName, username]);
+    }, [taskName, username, refreshKey]);
 
     async function fetchArticleInfo(): Promise<ArticleInfo> {
         const [
@@ -74,7 +78,7 @@ export function ArticleLogPage() {
             keywordsResponse,
             authorsResponse,
             pdfResponse,
-            stateResponse,
+            stateResponse
         ] = await Promise.all([
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_periodical')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_area')),
@@ -83,11 +87,11 @@ export function ArticleLogPage() {
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'keyword')),
             SendPostRequest(new ReadTaskAuthorMessage(taskName)),
             SendPostRequest(new ReadTaskPDFMessage(taskName)),
-            SendPostRequest(new ReadTaskInfoMessage(taskName, 'state')),
+            SendPostRequest(new ReadTaskInfoMessage(taskName, 'state'))
         ]);
 
         if (!taskPeriodicalResponse.data || !taskAreaResponse.data || !tldrResponse.data ||
-            !abstractResponse.data || !keywordsResponse.data || !authorsResponse.data || !pdfResponse.data) {
+            !abstractResponse.data || !keywordsResponse.data || !authorsResponse.data || !pdfResponse.data || !stateResponse.data) {
             throw new Error("Failed to fetch task info");
         }
 
@@ -116,13 +120,14 @@ export function ArticleLogPage() {
     }
 
     async function checkUserRole(): Promise<string> {
-        if (role =='user'){
+        if (role == 'user') {
             const response = await SendPostRequest(new CheckTaskIdentityMessage(taskName, username));
             return response.data;
         }
-        if (role =='editor'){
+        if (role == 'editor') {
             return 'editor'
         }
+        return '';
     }
 
     const handleDownloadPDF = () => {
@@ -198,6 +203,7 @@ export function ArticleLogPage() {
                             <p className="text-xl text-gray-700">Authors: {articleInfo.authors.join(', ')}</p>
                             <p className="text-lg text-gray-600">Journal: {articleInfo.taskPeriodical}</p>
                             <p className="text-lg text-gray-600">Research Area: {articleInfo.taskArea}</p>
+                            <p className="text-lg text-gray-600">State: {articleInfo.state}</p>
                             <div>
                                 <h3 className="text-xl font-semibold text-gray-800 mb-2">Keywords</h3>
                                 <p className="text-gray-700">{articleInfo.keywords}</p>
@@ -226,6 +232,7 @@ export function ArticleLogPage() {
                         editorPeriodical={editorPeriodical}
                         articlePeriodical={articleInfo.taskPeriodical}
                         articleState={articleInfo.state}
+                        refreshPage={refreshPage}
                     />
                 </div>
             </main>
