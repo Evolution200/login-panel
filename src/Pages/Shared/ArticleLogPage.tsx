@@ -19,6 +19,7 @@ interface ArticleInfo {
     abstract: string;
     keywords: string;
     pdfBase64: string;
+    state: string;
 }
 
 export function ArticleLogPage() {
@@ -30,6 +31,7 @@ export function ArticleLogPage() {
     const [error, setError] = useState<string | null>(null);
     const [userRole, setUserRole] = useState<string>('');
     const [editorPeriodical, setEditorPeriodical] = useState<string>('');
+    const [articleState, setArticleState] = useState<string>('');
 
     useEffect(() => {
         async function fetchData() {
@@ -37,9 +39,10 @@ export function ArticleLogPage() {
                 setLoading(true);
                 setError(null);
 
-                const [articleInfoResult, userRoleResult] = await Promise.all([
+                const [articleInfoResult, userRoleResult,] = await Promise.all([
                     fetchArticleInfo(),
                     checkUserRole()
+
                 ]);
 
                 setArticleInfo(articleInfoResult);
@@ -70,7 +73,8 @@ export function ArticleLogPage() {
             abstractResponse,
             keywordsResponse,
             authorsResponse,
-            pdfResponse
+            pdfResponse,
+            stateResponse,
         ] = await Promise.all([
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_periodical')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'task_area')),
@@ -78,7 +82,8 @@ export function ArticleLogPage() {
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'abstract')),
             SendPostRequest(new ReadTaskInfoMessage(taskName, 'keyword')),
             SendPostRequest(new ReadTaskAuthorMessage(taskName)),
-            SendPostRequest(new ReadTaskPDFMessage(taskName))
+            SendPostRequest(new ReadTaskPDFMessage(taskName)),
+            SendPostRequest(new ReadTaskInfoMessage(taskName, 'state')),
         ]);
 
         if (!taskPeriodicalResponse.data || !taskAreaResponse.data || !tldrResponse.data ||
@@ -105,13 +110,14 @@ export function ArticleLogPage() {
             tldr: tldrResponse.data,
             abstract: abstractResponse.data,
             keywords: keywordsResponse.data,
-            pdfBase64: pdfResponse.data
+            pdfBase64: pdfResponse.data,
+            state: stateResponse.data
         };
     }
 
     async function checkUserRole(): Promise<string> {
         if (role =='user'){
-            const response = await SendPostRequest(new CheckTaskIdentityMessage(taskName, username, ''));
+            const response = await SendPostRequest(new CheckTaskIdentityMessage(taskName, username));
             return response.data;
         }
         if (role =='editor'){
@@ -219,6 +225,7 @@ export function ArticleLogPage() {
                         taskName={taskName}
                         editorPeriodical={editorPeriodical}
                         articlePeriodical={articleInfo.taskPeriodical}
+                        articleState={articleInfo.state}
                     />
                 </div>
             </main>

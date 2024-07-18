@@ -5,6 +5,7 @@ export enum Decision {
     Reject = 'Reject',
     Revise = 'Revise',
     None = 'None',
+    Accepted = 'Accepted',
 }
 
 export interface LogData {

@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+// ReviewLog.tsx
+import React, { useState, useEffect } from 'react';
 import { SendPostRequest } from '../../Common/SendPost';
 import { AddLogMessage, LogData, Decision } from 'Plugins/TaskAPI/AddLogMessage';
+import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
 import { useUserStore } from '../../Store/UserStore';
 
 interface ReviewLogProps {
@@ -10,18 +12,34 @@ interface ReviewLogProps {
 
 export function ReviewLog({ taskName, onLogAdded }: ReviewLogProps) {
     const { username } = useUserStore();
+    const [canSubmitReview, setCanSubmitReview] = useState(false);
     const [newLog, setNewLog] = useState<LogData>({
-        logType: 'Decision', // 或 'Review'
+        logType: 'Review',
         userName: username,
         comment: '',
         decision: Decision.None,
         reasonsToAccept: '',
         reasonsToReject: '',
         questionsToAuthors: '',
-        rebuttal: '',  // 确保这里是空字符串
+        rebuttal: '',
         rating: 0,
         confidence: 0
     });
+
+    useEffect(() => {
+        checkTaskState();
+    }, [taskName]);
+
+    const checkTaskState = async () => {
+        try {
+            const response = await SendPostRequest(new ReadTaskInfoMessage(taskName, 'state'));
+            if (response && response.data) {
+                setCanSubmitReview(response.data === 'Review');  // 修改这里，使用大写的 'Review'
+            }
+        } catch (error) {
+            console.error('Failed to check task state:', error);
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -38,15 +56,26 @@ export function ReviewLog({ taskName, onLogAdded }: ReviewLogProps) {
             setNewLog({
                 ...newLog,
                 comment: '',
+                reasonsToAccept: '',
+                reasonsToReject: '',
+                questionsToAuthors: '',
                 rating: 0,
                 confidence: 0,
-                rebuttal: '' // 添加这一行
+                rebuttal: ''
             });
             onLogAdded();
         } catch (error) {
             console.error('Failed to add review log:', error);
         }
     };
+
+    if (!canSubmitReview) {
+        return (
+            <div className="mt-6 p-4 bg-yellow-100 border border-yellow-400 text-yellow-700 rounded">
+                The article is not in the Review state. You cannot submit a review at this time.
+            </div>
+        );
+    }
 
     return (
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
@@ -59,6 +88,40 @@ export function ReviewLog({ taskName, onLogAdded }: ReviewLogProps) {
                     onChange={handleInputChange}
                     className="w-full p-2 border rounded"
                     rows={4}
+                    required
+                ></textarea>
+            </div>
+            <div>
+                <label className="block mb-1">Reasons to Accept</label>
+                <textarea
+                    name="reasonsToAccept"
+                    value={newLog.reasonsToAccept}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    rows={3}
+                    required
+                ></textarea>
+            </div>
+            <div>
+                <label className="block mb-1">Reasons to Reject</label>
+                <textarea
+                    name="reasonsToReject"
+                    value={newLog.reasonsToReject}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    rows={3}
+                    required
+                ></textarea>
+            </div>
+            <div>
+                <label className="block mb-1">Questions to Authors</label>
+                <textarea
+                    name="questionsToAuthors"
+                    value={newLog.questionsToAuthors}
+                    onChange={handleInputChange}
+                    className="w-full p-2 border rounded"
+                    rows={3}
+                    required
                 ></textarea>
             </div>
             <div>
@@ -71,6 +134,7 @@ export function ReviewLog({ taskName, onLogAdded }: ReviewLogProps) {
                     min="0"
                     max="10"
                     className="w-full p-2 border rounded"
+                    required
                 />
             </div>
             <div>
@@ -83,6 +147,7 @@ export function ReviewLog({ taskName, onLogAdded }: ReviewLogProps) {
                     min="0"
                     max="10"
                     className="w-full p-2 border rounded"
+                    required
                 />
             </div>
             <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">

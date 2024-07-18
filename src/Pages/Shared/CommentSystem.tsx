@@ -8,14 +8,17 @@ import { AuthorRebuttal } from './AuthorRebuttal';
 interface CommentSystemProps {
     taskName: string;
     isAuthor: boolean;
+    userRole: string;
 }
 
-export function CommentSystem({ taskName, isAuthor }: CommentSystemProps) {
+export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemProps) {
     const { username } = useUserStore();
     const [logs, setLogs] = useState<LogData[]>([]);
     const [newComment, setNewComment] = useState('');
     const [replyingTo, setReplyingTo] = useState<LogData | null>(null);
     const [errorMessage, setErrorMessage] = useState<string>('');
+
+    const canComment = userRole !== 'editor';
 
     useEffect(() => {
         fetchLogs();
@@ -178,25 +181,27 @@ export function CommentSystem({ taskName, isAuthor }: CommentSystemProps) {
                 ))}
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-6">
-                <textarea
-                    value={newComment}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border rounded"
-                    rows={4}
-                    placeholder="Add a comment..."
-                ></textarea>
-                {errorMessage && (
-                    <p className="text-red-500 mt-1">{errorMessage}</p>
-                )}
-                <button
-                    type="submit"
-                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
-                    disabled={newComment.trim() === ''}
-                >
-                    Add Comment
-                </button>
-            </form>
+            {canComment && (
+                <form onSubmit={handleSubmit} className="mt-6">
+                    <textarea
+                        value={newComment}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border rounded"
+                        rows={4}
+                        placeholder="Add a comment..."
+                    ></textarea>
+                    {errorMessage && (
+                        <p className="text-red-500 mt-1">{errorMessage}</p>
+                    )}
+                    <button
+                        type="submit"
+                        className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:bg-blue-300"
+                        disabled={newComment.trim() === ''}
+                    >
+                        Add Comment
+                    </button>
+                </form>
+            )}
         </div>
     );
 }

@@ -1,3 +1,4 @@
+// DecisionLog.tsx
 import React, { useState, useEffect } from 'react';
 import { SendPostRequest } from '../../Common/SendPost';
 import { AddLogMessage, LogData, Decision } from 'Plugins/TaskAPI/AddLogMessage';
@@ -21,7 +22,7 @@ export function DecisionLog({ taskName, onLogAdded }: DecisionLogProps) {
         reasonsToAccept: '',
         reasonsToReject: '',
         questionsToAuthors: '',
-        rebuttal: '',  // 确保这里是空字符串
+        rebuttal: '',
         rating: 0,
         confidence: 0
     });
@@ -61,11 +62,11 @@ export function DecisionLog({ taskName, onLogAdded }: DecisionLogProps) {
             setNewLog({
                 ...newLog,
                 comment: '',
-                decision: Decision.Review,
+                decision: Decision.None,
                 reasonsToAccept: '',
                 reasonsToReject: '',
                 questionsToAuthors: '',
-                rebuttal: '' // 添加这一行
+                rebuttal: ''
             });
             onLogAdded();
             setCanAddDecision(false);
@@ -93,6 +94,7 @@ export function DecisionLog({ taskName, onLogAdded }: DecisionLogProps) {
                     onChange={handleInputChange}
                     className="w-full p-2 border rounded"
                 >
+                    <option value={Decision.None}>Select a decision</option>
                     <option value={Decision.Review}>Review</option>
                     <option value={Decision.Revise}>Revise</option>
                     <option value={Decision.Reject}>Reject</option>
@@ -108,7 +110,11 @@ export function DecisionLog({ taskName, onLogAdded }: DecisionLogProps) {
                     rows={4}
                 ></textarea>
             </div>
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                disabled={newLog.decision === Decision.None}
+            >
                 Submit Decision
             </button>
         </form>

@@ -6,7 +6,7 @@ import { UserLayout } from './UserLayout';
 
 export function UserMainPage() {
     const { username } = useUserStore();
-    const { tasks, fetchTasks } = useUserTaskStore();
+    const { authorTasks, reviewerTasks, fetchTasks } = useUserTaskStore();
     const history = useHistory();
     const [stats, setStats] = useState({ submitted: 0, inReview: 0 });
 
@@ -17,11 +17,11 @@ export function UserMainPage() {
     }, [username, fetchTasks]);
 
     useEffect(() => {
-        const submitted = tasks.length;
-        const inReview = tasks.filter(task =>
+        const submitted = authorTasks.length;
+        const inReview = authorTasks.filter(task =>
             task.state !== 'Reject' && task.state !== 'Accepted' && task.state.toLowerCase() !== 'completed').length;
         setStats({ submitted, inReview });
-    }, [tasks]);
+    }, [authorTasks]);
 
     return (
         <UserLayout>

@@ -3,15 +3,17 @@ import create from 'zustand';
 import { SendPostRequest } from '../Common/SendPost';
 import { ReadTaskListMessage } from 'Plugins/TaskAPI/ReadTaskListMessage';
 import { ReadTaskInfoMessage } from 'Plugins/TaskAPI/ReadTaskInfoMessage';
+import { CheckTaskIdentityMessage } from 'Plugins/TaskAPI/CheckTaskIdentityMessage';
 
-interface UserTask {
+export class UserTask {
     taskName: string;
     periodicalName: string;
     state: string;
 }
 
 interface UserTaskStore {
-    tasks: UserTask[];
+    authorTasks: UserTask[];
+    reviewerTasks: UserTask[];
     error: string | null;
     loading: boolean;
     fetchTasks: (userName: string) => Promise<void>;
@@ -19,7 +21,8 @@ interface UserTaskStore {
 }
 
 export const useUserTaskStore = create<UserTaskStore>((set) => ({
-    tasks: [],
+    authorTasks: [],
+    reviewerTasks: [],
     error: null,
     loading: false,
 
@@ -33,32 +36,41 @@ export const useUserTaskStore = create<UserTaskStore>((set) => ({
             if (taskListResponse && taskListResponse.data) {
                 try {
                     const tasksData = JSON.parse(taskListResponse.data) as { taskName: string }[];
-                    const tasks: UserTask[] = [];
+                    const authorTasks: UserTask[] = [];
+                    const reviewerTasks: UserTask[] = [];
 
                     for (const taskData of tasksData) {
                         // 获取periodicalName
                         const periodicalMessage = new ReadTaskInfoMessage(taskData.taskName, 'task_periodical');
                         const periodicalResponse = await SendPostRequest(periodicalMessage);
-                        console.log("Raw periodical response:", periodicalResponse);
                         const periodical = periodicalResponse.data || '';
 
                         // 获取state
                         const stateMessage = new ReadTaskInfoMessage(taskData.taskName, 'state');
                         const stateResponse = await SendPostRequest(stateMessage);
-                        console.log("Raw state response:", stateResponse);
                         const state = stateResponse.data || '';
 
-                        tasks.push({
+                        // 检查用户身份
+                        const identityMessage = new CheckTaskIdentityMessage(taskData.taskName, userName);
+                        const identityResponse = await SendPostRequest(identityMessage);
+                        const identity = identityResponse.data;
+
+                        const task = {
                             taskName: taskData.taskName,
                             periodicalName: periodical,
                             state: state
-                        });
+                        };
+
+                        if (identity === 'author') {
+                            authorTasks.push(task);
+                        } else if (identity === 'reviewer') {
+                            reviewerTasks.push(task);
+                        }
                     }
 
-                    set({ tasks, loading: false });
+                    set({ authorTasks, reviewerTasks, loading: false });
                 } catch (parseError) {
                     console.error("JSON Parse Error:", parseError);
-                    console.error("Failed data:", taskListResponse.data);
                     set({ error: 'Invalid data format received from server.', loading: false });
                 }
             } else {
