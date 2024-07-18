@@ -208,6 +208,7 @@ export function ArticleLogPage() {
                     <div className="bg-white shadow-xl rounded-lg overflow-hidden">
                         <div className="p-8 space-y-6">
                             <h1 className="text-3xl font-bold text-gray-900">{articleInfo.title}</h1>
+                            <p className="text-xl text-gray-700">Authors: {articleInfo.authors.join(', ')}</p>
                             <p className="text-lg text-gray-600">Journal: {articleInfo.taskPeriodical}</p>
                             <p className="text-lg text-gray-600">Research Area: {articleInfo.taskArea}</p>
                             <p className="text-lg text-gray-600">State: {articleInfo.state}</p>
