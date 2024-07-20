@@ -1,4 +1,3 @@
-// RoleBasedView.tsx
 import React from 'react';
 import { DecisionLog } from './DecisionLog';
 import { ReviewLog } from './ReviewLog';
@@ -28,7 +27,13 @@ export function RoleBasedView({
     return (
         <div>
             <div>
-                <CommentSystem taskName={taskName} isAuthor={isAuthor} userRole={userRole} />
+                <CommentSystem
+                    taskName={taskName}
+                    isAuthor={isAuthor}
+                    userRole={userRole}
+                    editorPeriodical={editorPeriodical}
+                    articlePeriodical={articlePeriodical}
+                />
             </div>
             {canDecide && (
                 <div className="mb-8">

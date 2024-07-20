@@ -6,7 +6,7 @@ import { useEditorTaskStore } from '../../Store/EditorTaskStore';
 
 export function EditorMainPage() {
     const { username } = useUserStore();
-    const { tasks, editorPeriodical, loading, error, fetchEditorPeriodical, fetchTasks } = useEditorTaskStore();
+    const { tasks, fetchEditorPeriodical, fetchTasks } = useEditorTaskStore();
     const [stats, setStats] = useState({ total: 0, inReview: 0 });
     const history = useHistory();
 

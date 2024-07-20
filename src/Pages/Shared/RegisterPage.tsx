@@ -6,12 +6,13 @@ import { EditorRegisterMessage, EditorRegisterInfo } from 'Plugins/EditorAPI/Edi
 import { useHistory } from 'react-router-dom';
 import { SendPostRequest } from '../../Common/SendPost';
 import { FetchPeriodicals } from '../../Common/FetchPeriodicals';
+import { useUserStore, UserRole } from '../../Store/UserStore';
 
 export const RegisterPage: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [role, setRole] = useState('');
+    const [role, setRole] = useState<UserRole | ''>('');
     const [errorMessage, setErrorMessage] = useState('');
     const [surname, setSurname] = useState('');
     const [lastName, setLastName] = useState('');
@@ -22,9 +23,10 @@ export const RegisterPage: React.FC = () => {
     const [periodicals, setPeriodicals] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const history = useHistory();
+    const { hashPassword } = useUserStore();
 
     useEffect(() => {
-        if (role === 'editor') {
+        if (role === UserRole.Editor) {
             loadPeriodicals();
         }
     }, [role]);
@@ -33,20 +35,21 @@ export const RegisterPage: React.FC = () => {
         try {
             const periodicalsList = await FetchPeriodicals();
             setPeriodicals(['Select your Periodical', ...periodicalsList]);
-            setPeriodical(''); // 将初始值设为空字符串
+            setPeriodical('');
         } catch (error) {
             setErrorMessage('Failed to load periodicals. Please try again.');
         }
     };
 
     const getRegisterMessage = (): API => {
+        const hashedPassword = hashPassword(password);
         switch (role) {
-            case 'manager':
-                return new ManagerRegisterMessage(username, password);
-            case 'editor':
+            case UserRole.Manager:
+                return new ManagerRegisterMessage(username, hashedPassword);
+            case UserRole.Editor:
                 const editorInfo: EditorRegisterInfo = {
                     userName: username,
-                    password: password,
+                    password: hashedPassword,
                     surName: surname,
                     lastName: lastName,
                     institute: institute,
@@ -55,10 +58,10 @@ export const RegisterPage: React.FC = () => {
                     periodical: periodical
                 };
                 return new EditorRegisterMessage(editorInfo);
-            case 'user':
+            case UserRole.User:
                 const userInfo: UserRegisterInfo = {
                     userName: username,
-                    password: password,
+                    password: hashedPassword,
                     surName: surname,
                     lastName: lastName,
                     institute: institute,
@@ -89,10 +92,6 @@ export const RegisterPage: React.FC = () => {
                 if (response.data === "already registered") {
                     setErrorMessage('The username already exists');
                 } else {
-                    // 清除 localStorage 数据
-                    localStorage.removeItem('username');
-                    localStorage.removeItem('password');
-
                     alert('Please wait a moment. Your registration is being processed!');
                     history.replace("/")
                 }
@@ -107,7 +106,6 @@ export const RegisterPage: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-            {/* 背景图案 */}
             <div className="absolute inset-0 z-0 opacity-10">
                 <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
                     <path d="M14 16H9v-2h5V9.87a4 4 0 1 1 2 0V14h5v2h-5v15.95A10 10 0 0 0 23.66 27l-3.46-2 8.2-2.2-2.9 5a12 12 0 0 1-21 0l-2.89-5 8.2 2.2-3.47 2A10 10 0 0 0 14 31.95V16zm40 40h-5v-2h5v-4.13a4 4 0 1 1 2 0V54h5v2h-5v15.95A10 10 0 0 0 63.66 67l-3.47-2 8.2-2.2-2.88 5a12 12 0 0 1-21.02 0l-2.88-5 8.2 2.2-3.47 2A10 10 0 0 0 54 71.95V56zm-39 6a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm40-40a2 2 0 1 1 0-4 2 2 0 0 1 0 4zM15 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm40 40a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="currentColor"/>
@@ -131,25 +129,24 @@ export const RegisterPage: React.FC = () => {
                             <select
                                 id="role"
                                 value={role}
-                                onChange={(e) => setRole(e.target.value)}
+                                onChange={(e) => setRole(e.target.value as UserRole)}
                                 onFocus={() => setIsOpen(true)}
                                 onBlur={() => setIsOpen(false)}
                                 required
                                 className="appearance-none rounded-md relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                             >
                                 <option value="" disabled>Choose your role</option>
-                                <option value="manager">Manager</option>
-                                <option value="editor">Editor</option>
-                                <option value="user">User</option>
+                                <option value={UserRole.Manager}>Manager</option>
+                                <option value={UserRole.Editor}>Editor</option>
+                                <option value={UserRole.User}>User</option>
                             </select>
-                            <div
-                                className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                                 <svg
                                     className={`fill-current h-4 w-4 transform ${isOpen ? 'rotate-180' : ''} transition-transform duration-200`}
                                     xmlns="http://www.w3.org/2000/svg"
                                     viewBox="0 0 20 20"
                                 >
-                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                                 </svg>
                             </div>
                         </div>
@@ -194,7 +191,7 @@ export const RegisterPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {(role === 'user' || role === 'editor') && (
+                    {(role === UserRole.User || role === UserRole.Editor) && (
                         <div className="rounded-md shadow-sm -space-y-px">
                             <div>
                                 <label htmlFor="surname" className="sr-only">First Name</label>
@@ -259,7 +256,7 @@ export const RegisterPage: React.FC = () => {
                         </div>
                     )}
 
-                    {role === 'editor' && (
+                    {role === UserRole.Editor && (
                         <div>
                             <label htmlFor="periodical" className="sr-only">Journal</label>
                             <select

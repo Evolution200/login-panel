@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { LoginMessage } from 'Plugins/UserManagementAPI/LoginMessage';
 import { SendPostRequest } from '../../Common/SendPost';
-import { useUserStore } from '../../Store/UserStore';
+import { useUserStore, UserRole } from '../../Store/UserStore';
 
 export const LoginPage: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -11,38 +11,14 @@ export const LoginPage: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const history = useHistory();
-    const setUser = useUserStore(state => state.setUser);
-
-    const loadSavedCredentials = useCallback(() => {
-        try {
-            const savedUsername = localStorage.getItem('username');
-            const savedPassword = localStorage.getItem('password');
-            if (savedUsername && savedPassword) {
-                setUsername(savedUsername);
-                setPassword(savedPassword);
-                setRememberMe(true);
-            }
-        } catch (error) {
-            console.error('Error reading from localStorage:', error);
-        }
-    }, []);
-
-    useEffect(() => {
-        loadSavedCredentials();
-
-        return () => {
-            setUsername('');
-            setPassword('');
-            setRememberMe(false);
-            setErrorMessage('');
-        };
-    }, [loadSavedCredentials]);
+    const { setUser, hashPassword } = useUserStore();
 
     const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         setErrorMessage('');
         setIsLoading(true);
-        const message = new LoginMessage(username, password);
+        const hashedPassword = hashPassword(password);
+        const message = new LoginMessage(username, hashedPassword);
         try {
             const response = await SendPostRequest(message);
             if (response && response.status === 200) {
@@ -54,26 +30,24 @@ export const LoginPage: React.FC = () => {
                         setErrorMessage('Incorrect password. Please try again.');
                         break;
                     default:
-                        const userRole = response.data;
+                        const userRole = response.data as UserRole;
                         setUser(username, userRole);
                         if (rememberMe) {
                             localStorage.setItem('username', username);
-                            localStorage.setItem('password', password);
                         } else {
                             localStorage.removeItem('username');
-                            localStorage.removeItem('password');
                         }
                         switch (userRole) {
-                            case 'superuser':
+                            case UserRole.SuperUser:
                                 history.push('/SuperuserMain');
                                 break;
-                            case 'manager':
+                            case UserRole.Manager:
                                 history.push('/ManagerMain');
                                 break;
-                            case 'editor':
+                            case UserRole.Editor:
                                 history.push('/EditorMain');
                                 break;
-                            case 'user':
+                            case UserRole.User:
                                 history.push('/UserMain');
                                 break;
                             default:
@@ -89,7 +63,7 @@ export const LoginPage: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [username, password, rememberMe, history, setUser]);
+    }, [username, password, rememberMe, history, setUser, hashPassword]);
 
     const handleUsernameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);
@@ -225,7 +199,7 @@ export const LoginPage: React.FC = () => {
                                 onChange={(e) => setRememberMe(e.target.checked)}
                             />
                             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                            Remember me
+                                Remember me
                             </label>
                         </div>
                         <div className="text-sm">
@@ -251,7 +225,7 @@ export const LoginPage: React.FC = () => {
                             type="submit"
                             disabled={isLoading}
                             className={buttonClass}
-                            >
+                        >
                             <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                                 <svg className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400"
                                      xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"

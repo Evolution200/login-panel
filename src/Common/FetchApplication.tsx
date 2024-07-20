@@ -1,15 +1,9 @@
-// FetchApplication.tsx
-import React from 'react';
-import { SendPostRequest } from '../Common/SendPost';
+import { SendPostRequest } from './SendPost';
 import { API } from 'Plugins/CommonUtils/API'
 
 export interface Application {
     userName: string;
 }
-
-export const FetchApplication: React.FC = () => {
-    return null; // 这个组件不渲染任何内容
-};
 
 export const fetchApplications = async (message:API)=> {
     try {
