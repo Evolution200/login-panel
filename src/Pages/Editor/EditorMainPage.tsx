@@ -18,7 +18,7 @@ export function EditorMainPage() {
 
     useEffect(() => {
         const total = tasks.length;
-        const inReview = tasks.filter(task => task.state !== 'Accepted' && task.state !== 'Reject').length;
+        const inReview = tasks.filter(task => task.state !== 'Accepted' && task.state !== 'Reject' && task.state !== 'Revise').length;
         setStats({ total, inReview });
     }, [tasks]);
 
