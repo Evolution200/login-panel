@@ -3,7 +3,6 @@ import { UserMessage } from 'Plugins/UserAPI/UserMessage'
 
 export interface UserRegisterInfo {
     userName: string;
-    password: string;
     surName: string;
     lastName: string;
     institute: string;
@@ -13,9 +12,11 @@ export interface UserRegisterInfo {
 
 export class UserRegisterMessage extends UserMessage {
     userInfo: UserRegisterInfo;
+    password: string;
 
-    constructor(userInfo: UserRegisterInfo) {
+    constructor(userInfo: UserRegisterInfo, password: string) {
         super();
         this.userInfo = userInfo;
+        this.password = password;
     }
 }

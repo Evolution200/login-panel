@@ -2,7 +2,6 @@ import { EditorMessage } from 'Plugins/EditorAPI/EditorMessage'
 
 export interface EditorRegisterInfo {
     userName: string;
-    password: string;
     surName: string;
     lastName: string;
     institute: string;
@@ -13,9 +12,11 @@ export interface EditorRegisterInfo {
 
 export class EditorRegisterMessage extends EditorMessage {
     editorInfo: EditorRegisterInfo;
+    password: string
 
-    constructor(editorInfo: EditorRegisterInfo) {
+    constructor(editorInfo: EditorRegisterInfo, password: string) {
         super();
         this.editorInfo = editorInfo;
+        this.password = password;
     }
 }

@@ -47,7 +47,6 @@ export const RegisterPage: React.FC = () => {
             case UserRole.Editor:
                 const editorInfo: EditorRegisterInfo = {
                     userName: username,
-                    password: password,
                     surName: surname,
                     lastName: lastName,
                     institute: institute,
@@ -55,18 +54,17 @@ export const RegisterPage: React.FC = () => {
                     email: email,
                     periodical: periodical
                 };
-                return new EditorRegisterMessage(editorInfo);
+                return new EditorRegisterMessage(editorInfo, password);
             case UserRole.User:
                 const userInfo: UserRegisterInfo = {
                     userName: username,
-                    password: password,
                     surName: surname,
                     lastName: lastName,
                     institute: institute,
                     expertise: expertise,
                     email: email
                 };
-                return new UserRegisterMessage(userInfo);
+                return new UserRegisterMessage(userInfo, password);
             default:
                 throw new Error('Invalid role');
         }
