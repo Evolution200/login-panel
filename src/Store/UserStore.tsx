@@ -15,15 +15,14 @@ interface Article {
     state: string
 }
 
-// const generateSalt = (): string => {
-//     return 'FixedSaltValueForSocraticReviewSystem2024';
-// };
+const generateSalt = (): string => {
+     return 'FixedSaltValueForSocraticReviewSystem2024';
+};
 
 interface UserState {
     username: string;
     role: UserRole | '';
     articles: Article[];
-    // salt: string;
     setUser: (username: string, role: UserRole) => void;
     clearUser: () => void;
     setArticles: (articles: Article[]) => void;
@@ -37,7 +36,6 @@ export const useUserStore = create<UserState>()(
             username: '',
             role: '',
             articles: [],
-            // salt: generateSalt(),
             setUser: (username, role) => set({ username, role }),
             clearUser: () => set({ username: '', role: '', articles: [] }),
             setArticles: (articles) => set({ articles }),

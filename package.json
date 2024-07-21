@@ -104,6 +104,7 @@
         "@types/react-dom": "^17.0.25",
         "@types/react-router": "^5.1.16",
         "@types/react-router-dom": "^5.1.6",
+        "@types/uuid": "^10.0.0",
         "@typescript-eslint/eslint-plugin": "^4.0.1",
         "@typescript-eslint/parser": "^4.0.1",
         "@vercel/webpack-asset-relocator-loader": "1.6.0",
@@ -183,6 +184,7 @@
         "reflect-metadata": "^0.1.13",
         "slash": "^5.1.0",
         "terser-webpack-plugin": "^5.1.4",
+        "uuid": "^10.0.0",
         "zustand": "^4.5.4"
     }
 }

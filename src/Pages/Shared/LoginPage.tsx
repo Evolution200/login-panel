@@ -11,13 +11,12 @@ export const LoginPage: React.FC = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const history = useHistory();
-    const { setUser, hashPassword } = useUserStore();
+    const { setUser } = useUserStore();
 
     const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         setErrorMessage('');
         setIsLoading(true);
-        // const hashedPassword = hashPassword(password);
         const message = new LoginMessage(username, password); // 直接使用password，而不是hashedPassword
         try {
             const response = await SendPostRequest(message);

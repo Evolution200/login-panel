@@ -23,7 +23,6 @@ export const RegisterPage: React.FC = () => {
     const [periodicals, setPeriodicals] = useState<string[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const history = useHistory();
-    const { hashPassword } = useUserStore();
 
     useEffect(() => {
         if (role === UserRole.Editor) {
@@ -42,7 +41,6 @@ export const RegisterPage: React.FC = () => {
     };
 
     const getRegisterMessage = (): API => {
-        // const hashedPassword = hashPassword(password);
         switch (role) {
             case UserRole.Manager:
                 return new ManagerRegisterMessage(username, password);
