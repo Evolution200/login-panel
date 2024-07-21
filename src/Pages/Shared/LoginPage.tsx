@@ -17,8 +17,8 @@ export const LoginPage: React.FC = () => {
         e.preventDefault();
         setErrorMessage('');
         setIsLoading(true);
-        const hashedPassword = hashPassword(password);
-        const message = new LoginMessage(username, hashedPassword);
+        // const hashedPassword = hashPassword(password);
+        const message = new LoginMessage(username, password); // 直接使用password，而不是hashedPassword
         try {
             const response = await SendPostRequest(message);
             if (response && response.status === 200) {
@@ -63,7 +63,7 @@ export const LoginPage: React.FC = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [username, password, rememberMe, history, setUser, hashPassword]);
+    }, [username, password, rememberMe, history, setUser /*hashPassword*/]);
 
     const handleUsernameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(e.target.value);

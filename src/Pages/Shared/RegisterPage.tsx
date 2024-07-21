@@ -42,14 +42,14 @@ export const RegisterPage: React.FC = () => {
     };
 
     const getRegisterMessage = (): API => {
-        const hashedPassword = hashPassword(password);
+        // const hashedPassword = hashPassword(password);
         switch (role) {
             case UserRole.Manager:
-                return new ManagerRegisterMessage(username, hashedPassword);
+                return new ManagerRegisterMessage(username, password);
             case UserRole.Editor:
                 const editorInfo: EditorRegisterInfo = {
                     userName: username,
-                    password: hashedPassword,
+                    password: password,
                     surName: surname,
                     lastName: lastName,
                     institute: institute,
@@ -61,7 +61,7 @@ export const RegisterPage: React.FC = () => {
             case UserRole.User:
                 const userInfo: UserRegisterInfo = {
                     userName: username,
-                    password: hashedPassword,
+                    password: password,
                     surName: surname,
                     lastName: lastName,
                     institute: institute,
@@ -73,6 +73,7 @@ export const RegisterPage: React.FC = () => {
                 throw new Error('Invalid role');
         }
     };
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -90,7 +91,7 @@ export const RegisterPage: React.FC = () => {
             const response = await SendPostRequest(message);
             if (response.status === 200) {
                 if (response.data === "already registered") {
-                    setErrorMessage('The username already exists');
+                    setErrorMessage('This account has already been registered. Please use a different username.');
                 } else {
                     alert('Please wait a moment. Your registration is being processed!');
                     history.replace("/")

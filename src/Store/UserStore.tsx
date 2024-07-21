@@ -1,4 +1,3 @@
-// UserStore.tsx
 import create from 'zustand';
 import { persist } from 'zustand/middleware';
 import { sha256 } from 'js-sha256';
@@ -11,25 +10,20 @@ export enum UserRole {
 }
 
 interface Article {
-     taskName: string,
-     periodicalName: string,
-     state: string
+    taskName: string,
+    periodicalName: string,
+    state: string
 }
 
-const generateSalt = (): string => {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+';
-    let result = '';
-    for (let i = 0; i < 32; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-};
+// const generateSalt = (): string => {
+//     return 'FixedSaltValueForSocraticReviewSystem2024';
+// };
 
 interface UserState {
     username: string;
     role: UserRole | '';
     articles: Article[];
-    salt: string;
+    // salt: string;
     setUser: (username: string, role: UserRole) => void;
     clearUser: () => void;
     setArticles: (articles: Article[]) => void;
@@ -43,12 +37,12 @@ export const useUserStore = create<UserState>()(
             username: '',
             role: '',
             articles: [],
-            salt: generateSalt(),
+            // salt: generateSalt(),
             setUser: (username, role) => set({ username, role }),
-            clearUser: () => set({ username: '', role: '', articles: [], salt: generateSalt() }),
+            clearUser: () => set({ username: '', role: '', articles: [] }),
             setArticles: (articles) => set({ articles }),
             addArticle: (article) => set((state) => ({ articles: [...state.articles, article] })),
-            hashPassword: (password) => sha256(password + get().salt),
+            hashPassword: (password) => sha256(password), // 移除了加盐部分
         }),
         {
             name: 'user-storage',
