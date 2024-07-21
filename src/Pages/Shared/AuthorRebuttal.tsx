@@ -1,4 +1,3 @@
-// AuthorRebuttal.tsx
 import React, { useState } from 'react';
 import { SendPostRequest } from '../../Common/SendPost';
 import { AddRebuttalMessage } from 'Plugins/TaskAPI/AddRebuttalMessage';

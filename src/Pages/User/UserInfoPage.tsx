@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
 import { UserReadProfilePhotoMessage } from 'Plugins/UserAPI/UserReadProfilePhotoMessage';
 import { UserEditProfilePhotoMessage } from 'Plugins/UserAPI/UserEditProfilePhotoMessage';
@@ -31,7 +30,6 @@ const propertyDisplayNames: Record<keyof UserInfoData, string> = {
 };
 
 export function UserInfoPage() {
-    const history = useHistory();
     const { username } = useUserStore();
     const [userInfo, setUserInfo] = useState<Partial<UserInfoData>>({});
     const [errorMessage, setErrorMessage] = useState('');

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useUserStore } from '../../Store/UserStore';
 import { UserSubmissionMessage } from 'Plugins/UserAPI/UserSubmissionMessage';
 import { SendPostRequest } from '../../Common/SendPost';
@@ -7,7 +6,6 @@ import { UserLayout } from './UserLayout';
 import { FetchPeriodicals } from '../../Common/FetchPeriodicals';
 
 export function UserSubmitArticle() {
-    const history = useHistory();
     const { username } = useUserStore();
     const [taskName, setTaskName] = useState('');
     const [periodicalName, setPeriodicalName] = useState('');

@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useUserStore } from '../../Store/UserStore';
 
-interface EditorLayoutProps {
+class EditorLayoutProps {
     children: React.ReactNode;
     currentPage: 'main' | 'info' | 'articles' | 'search';
 }

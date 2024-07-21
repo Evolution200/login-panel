@@ -1,4 +1,3 @@
-// ArticleLogPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { SendPostRequest } from '../../Common/SendPost';
@@ -10,7 +9,6 @@ import { ReadTaskPDFMessage } from 'Plugins/TaskAPI/ReadTaskPDFMessage';
 import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
 import { ReadAliasMessage } from 'Plugins/TaskAPI/ReadAliasMessage'
 import { ReadAliasTokenMessage } from 'Plugins/TaskAPI/ReadAliasTokenMessage'
-import { LogData } from 'Plugins/TaskAPI/AddLogMessage'
 import { ReadTaskAuthorMessage } from 'Plugins/TaskAPI/ReadTaskAuthorMessage'
 
 interface ArticleInfo {
@@ -23,19 +21,6 @@ interface ArticleInfo {
     keywords: string;
     pdfBase64: string;
     state: string;
-}
-
-enum TaskState {
-    Init = 'init',
-    InProgress = 'inProgress',
-    Completed = 'completed',
-    Rejected = 'rejected'
-}
-
-
-interface AliasInfo {
-    alias: string;
-    aliasToken: string;
 }
 
 export function ArticleLogPage() {
@@ -248,8 +233,8 @@ export function ArticleLogPage() {
                                         </svg>
                                     </div>
                                     <div
-                                        className="mt-2 text-xl text-gray-700 italic">{articleInfo.authors.join(', ')}</div>
-                                </div>x
+                                       className="mt-2 text-xl text-gray-700 italic">{articleInfo.authors.join(', ')}</div>
+                                </div>
                             </div>
 
                             <div className="text-sm text-gray-600 mt-4">

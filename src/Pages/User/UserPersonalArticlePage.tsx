@@ -6,7 +6,6 @@ import { UserLayout } from './UserLayout';
 import { AddTaskIdentityMessage } from 'Plugins/TaskAPI/AddTaskIdentityMessage';
 import { SendPostRequest } from '../../Common/SendPost'
 
-// 使用枚举定义可能的状态类型
 enum TaskState {
     Init = 'init',
     Revise = 'revise',
@@ -15,7 +14,6 @@ enum TaskState {
     Accepted = 'accepted',
 }
 
-// 使用 Record 类型来定义 stateColorMap，现在使用 TaskState 枚举
 const stateColorMap: Record<TaskState, string> = {
     [TaskState.Init]: 'bg-blue-100 text-blue-800',
     [TaskState.Revise]: 'bg-yellow-100 text-yellow-800',

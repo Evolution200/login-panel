@@ -6,7 +6,7 @@ import { SendPostRequest } from '../../Common/SendPost';
 import { useUserStore } from '../../Store/UserStore';
 import { EditorLayout } from './EditorLayout';
 
-interface EditorInfoData {
+class EditorInfoData {
     user_name: string;
     sur_name: string;
     last_name: string;

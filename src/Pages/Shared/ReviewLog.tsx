@@ -1,4 +1,3 @@
-// ReviewLog.tsx
 import React, { useState, useEffect } from 'react';
 import { SendPostRequest } from '../../Common/SendPost';
 import { AddLogMessage, LogData, Decision } from 'Plugins/TaskAPI/AddLogMessage';
