@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useUserStore } from '../../Store/UserStore';
 
-interface ManagerLayoutProps {
+class ManagerLayoutProps {
     children: React.ReactNode;
     currentPage: 'main' | 'management' | 'periodical';
 }

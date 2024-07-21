@@ -6,7 +6,7 @@ import { useEditorTaskStore } from '../../Store/EditorTaskStore';
 
 export function EditorMainPage() {
     const { username } = useUserStore();
-    const { tasks, editorPeriodical, loading, error, fetchEditorPeriodical, fetchTasks } = useEditorTaskStore();
+    const { tasks, fetchEditorPeriodical, fetchTasks } = useEditorTaskStore();
     const [stats, setStats] = useState({ total: 0, inReview: 0 });
     const history = useHistory();
 
@@ -18,7 +18,7 @@ export function EditorMainPage() {
 
     useEffect(() => {
         const total = tasks.length;
-        const inReview = tasks.filter(task => task.state !== 'Accepted' && task.state !== 'Reject').length;
+        const inReview = tasks.filter(task => task.state !== 'Accepted' && task.state !== 'Reject' && task.state !== 'Revise').length;
         setStats({ total, inReview });
     }, [tasks]);
 

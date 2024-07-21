@@ -1,4 +1,3 @@
-// CommentSystem.tsx
 import React, { useState, useEffect } from 'react';
 import { SendPostRequest } from '../../Common/SendPost';
 import { AddLogMessage, LogData, Decision } from 'Plugins/TaskAPI/AddLogMessage';
@@ -13,6 +12,8 @@ interface CommentSystemProps {
     taskName: string;
     isAuthor: boolean;
     userRole: string;
+    editorPeriodical: string;
+    articlePeriodical: string;
 }
 
 interface AliasInfo {
@@ -20,7 +21,7 @@ interface AliasInfo {
     aliasToken: string;
 }
 
-export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemProps) {
+export function CommentSystem({ taskName, isAuthor, userRole, editorPeriodical, articlePeriodical }: CommentSystemProps) {
     const { username } = useUserStore();
     const [logs, setLogs] = useState<LogData[]>([]);
     const [newComment, setNewComment] = useState('');
@@ -30,6 +31,7 @@ export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemPro
     const [editorName, setEditorName] = useState<string>('');
 
     const canComment = userRole !== 'editor';
+    const isEditorForThisJournal = userRole === 'editor' && editorPeriodical === articlePeriodical;
 
     useEffect(() => {
         fetchLogs();
@@ -75,7 +77,7 @@ export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemPro
 
     const fetchEditorName = async (logs: LogData[]) => {
         const editorLog = logs.find(log => log.logType === 'Decision');
-        if (editorLog) {
+        if (editorLog && isEditorForThisJournal) {
             const [surNameResponse, lastNameResponse] = await Promise.all([
                 SendPostRequest(new UserReadInfoMessage(editorLog.userName, 'sur_name')),
                 SendPostRequest(new UserReadInfoMessage(editorLog.userName, 'last_name'))
@@ -87,11 +89,11 @@ export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemPro
     };
 
     const getDisplayName = (userName: string, logType: string) => {
-        if (logType === 'Decision') {
+        if (logType === 'Decision' && isEditorForThisJournal) {
             return editorName || userName;
         } else {
             const aliasInfo = aliases[userName];
-            return aliasInfo ? `${aliasInfo.alias} ${aliasInfo.aliasToken}` : 'Anonymous';
+            return aliasInfo ? `${aliasInfo.alias} ${aliasInfo.aliasToken}` : 'Editor';
         }
     };
 
@@ -160,11 +162,12 @@ export function CommentSystem({ taskName, isAuthor, userRole }: CommentSystemPro
         return (
             <div className="bg-gray-100 p-4 rounded-lg border border-gray-300 mb-4">
                 <div className="min-h-[200px] space-y-6">
-                    <span className={`className="inline-block text-center text-2xl font-semibold round-full mb-2 border-2 border-indigo-200 bg-indigo-200 rounded-xl px-2 py-1"> ${logTypeColor}`}>{log.logType}</span>
+                    <span className={`inline-block text-center text-2xl font-semibold round-full mb-2 border-2 border-indigo-200 bg-indigo-200 rounded-xl px-2 py-1 ${logTypeColor}`}>{log.logType}</span>
                     <span className="text-md text-gray-600 mb-2 italic ml-4">By: {displayName}</span>
                     {log.logType === 'Decision' && (
                         <div className="mb-2">
-                            <span className="text-md font-semibold text-red-600">Decision:</span> {log.decision}</div>
+                            <span className="text-md font-semibold text-red-600">Decision:</span> {log.decision}
+                        </div>
                     )}
                     {log.logType === 'Review' && (
                         <div className="mb-2">
