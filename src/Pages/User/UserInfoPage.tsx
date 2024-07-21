@@ -3,6 +3,7 @@ import { UserReadInfoMessage } from 'Plugins/UserAPI/UserReadInfoMessage';
 import { UserReadProfilePhotoMessage } from 'Plugins/UserAPI/UserReadProfilePhotoMessage';
 import { UserEditProfilePhotoMessage } from 'Plugins/UserAPI/UserEditProfilePhotoMessage';
 import { UserEditInfoMessage } from 'Plugins/UserAPI/UserEditInfoMessage';
+import { EditPasswordMessage } from 'Plugins/UserManagementAPI/EditPasswordMessage';
 import { SendPostRequest } from '../../Common/SendPost';
 import { useUserStore } from '../../Store/UserStore';
 import { UserLayout } from './UserLayout';
@@ -17,7 +18,7 @@ interface UserInfoData {
     password: string;
 }
 
-const userProperties: (keyof UserInfoData)[] = ['user_name', 'sur_name', 'last_name', 'institute', 'expertise', 'email'];
+const userProperties: (keyof UserInfoData)[] = ['user_name', 'sur_name', 'last_name', 'institute', 'expertise', 'email', 'password'];
 
 const propertyDisplayNames: Record<keyof UserInfoData, string> = {
     user_name: 'Username',
@@ -33,17 +34,57 @@ export function UserInfoPage() {
     const { username } = useUserStore();
     const [userInfo, setUserInfo] = useState<Partial<UserInfoData>>({});
     const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [profilePhoto, setProfilePhoto] = useState<string>('');
     const [isUploading, setIsUploading] = useState(false);
     const [editMode, setEditMode] = useState<keyof UserInfoData | null>(null);
     const [editValue, setEditValue] = useState('');
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     useEffect(() => {
         loadUserInfo();
         loadProfilePhoto();
     }, []);
+
+    useEffect(() => {
+        if (errorMessage) {
+            const timer = setTimeout(() => {
+                setErrorMessage('');
+            }, 5000); // 5000 毫秒 = 5 秒
+
+            // 清理函数
+            return () => clearTimeout(timer);
+        }
+    }, [errorMessage]);
+
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage('');
+            }, 5000); // 5000 毫秒 = 5 秒
+
+            // 清理函数
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage]);
+
+    const validatePassword = (password: string): string | null => {
+        if (password.length < 8) {
+            return 'Password must be at least 8 characters long';
+        }
+        if (!/\d/.test(password)) {
+            return 'Password must contain at least one number';
+        }
+        if (!/[a-zA-Z]/.test(password)) {
+            return 'Password must contain at least one letter';
+        }
+        if (/[^a-zA-Z0-9]/.test(password)) {
+            return 'Password cannot contain special characters';
+        }
+        return null;
+    };
 
     const loadUserInfo = async () => {
         try {
@@ -127,34 +168,55 @@ export function UserInfoPage() {
     };
 
     const handleSave = async () => {
+
         if (!editMode) return;
 
         try {
             if (editMode === 'password') {
-                // 验证当前密码
-                const passwordResponse = await SendPostRequest(new UserReadInfoMessage(username, 'password'));
-                if (passwordResponse.data !== currentPassword) {
-                    setErrorMessage('Current password is incorrect');
+
+                if (currentPassword === newPassword) {
+                    setErrorMessage('New password must be different from the current password');
                     return;
                 }
-                // 更新密码
-                const response = await SendPostRequest(new UserEditInfoMessage(username, 'password', newPassword));
+
+                if (newPassword !== confirmPassword) {
+                    setErrorMessage('New password and confirm password do not match');
+                    setSuccessMessage('');
+                    return;
+                }
+
+                const passwordError = validatePassword(newPassword);
+                if (passwordError) {
+                    setErrorMessage(passwordError);
+                    return;
+                }
+                const response = await SendPostRequest(new EditPasswordMessage(username, currentPassword, newPassword));
                 if (response.data === 'OK') {
                     setUserInfo(prev => ({ ...prev, password: '********' }));
                     setEditMode(null);
+                    setSuccessMessage('Password updated successfully');
                     setErrorMessage('');
-                } else {
-                    setErrorMessage('Failed to update password. Please try again.');
+                    setCurrentPassword('');
+                    setNewPassword('');
+                } else if (response.data === 'Original password input is incorrect') {
+                    setErrorMessage('Original password input is incorrect');
+                    setSuccessMessage('');
                 }
-            } else {
+                else {
+                    setErrorMessage('Failed to update password. Please check your current password and try again.');
+                    setSuccessMessage('');
+                }
+            }  else {
                 // 更新其他字段
                 const response = await SendPostRequest(new UserEditInfoMessage(username, editMode, editValue));
                 if (response.data === 'OK') {
                     setUserInfo(prev => ({ ...prev, [editMode]: editValue }));
                     setEditMode(null);
+                    setSuccessMessage(`${propertyDisplayNames[editMode]} updated successfully`); // 确保这行存在
                     setErrorMessage('');
                 } else {
                     setErrorMessage(`Failed to update ${propertyDisplayNames[editMode]}. Please try again.`);
+                    setSuccessMessage('');
                 }
             }
         } catch (error) {
@@ -179,6 +241,13 @@ export function UserInfoPage() {
                         <p className="mt-1 text-xl text-white opacity-80">Manage your personal information</p>
                     </div>
                 </div>
+
+                {successMessage && (
+                    <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded transition-opacity duration-500 ease-in-out" role="alert">
+                        <p className="font-bold">Success</p>
+                        <p>{successMessage}</p>
+                    </div>
+                )}
 
                 {errorMessage && (
                     <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded" role="alert">
@@ -217,13 +286,13 @@ export function UserInfoPage() {
                                             {editMode === prop ? (
                                                 <div className="flex items-center justify-end space-x-2">
                                                     {prop === 'password' ? (
-                                                        <>
+                                                        <div className="flex flex-col space-y-2 max-w-xs">
                                                             <input
                                                                 type="password"
                                                                 value={currentPassword}
                                                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                                                 placeholder="Current Password"
-                                                                className="px-2 py-1 border rounded"
+                                                                className="px-2 py-1 border rounded w-full"
                                                             />
                                                             <input
                                                                 type="password"
@@ -232,7 +301,18 @@ export function UserInfoPage() {
                                                                 placeholder="New Password"
                                                                 className="px-2 py-1 border rounded"
                                                             />
-                                                        </>
+                                                            <input
+                                                                type="password"
+                                                                value={confirmPassword}
+                                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                                placeholder="Confirm New Password"
+                                                                className="px-2 py-1 border rounded"
+                                                            />
+                                                            <p className="text-xs text-gray-500">
+                                                                Password must be at least 8 characters long,
+                                                                contains at number and letter, and can't contain special characters.
+                                                            </p>
+                                                        </div>
                                                     ) : (
                                                         <input
                                                             type="text"
@@ -241,8 +321,10 @@ export function UserInfoPage() {
                                                             className="px-2 py-1 border rounded"
                                                         />
                                                     )}
-                                                    <button onClick={handleSave} className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition duration-150 transform hover:scale-105">Save</button>
-                                                    <button onClick={handleCancel} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-150 transform hover:scale-105">Cancel</button>
+                                                    <div className="flex flex-col space-y-2">
+                                                        <button onClick={handleSave} className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition duration-150 transform hover:scale-105">Save</button>
+                                                        <button onClick={handleCancel} className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-150 transform hover:scale-105">Cancel</button>
+                                                    </div>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center justify-end space-x-2">

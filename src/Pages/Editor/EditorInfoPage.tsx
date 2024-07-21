@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { EditorReadInfoMessage } from 'Plugins/EditorAPI/EditorReadInfoMessage';
 import { UserReadProfilePhotoMessage } from 'Plugins/EditorAPI/UserReadProfilePhotoMessage';
 import { UserEditProfilePhotoMessage } from 'Plugins/EditorAPI/UserEditProfilePhotoMessage';
+import { EditorEditInfoMessage } from 'Plugins/EditorAPI/EditorEditInfoMessage';
+import { EditPasswordMessage } from 'Plugins/UserManagementAPI/EditPasswordMessage';
 import { SendPostRequest } from '../../Common/SendPost';
 import { useUserStore } from '../../Store/UserStore';
 import { EditorLayout } from './EditorLayout';
@@ -14,9 +16,10 @@ class EditorInfoData {
     expertise: string;
     email: string;
     periodical: string;
+    password: string;
 }
 
-const editorProperties: (keyof EditorInfoData)[] = ['user_name', 'sur_name', 'last_name', 'institute', 'expertise', 'email', 'periodical'];
+const editorProperties: (keyof EditorInfoData)[] = ['user_name', 'sur_name', 'last_name', 'institute', 'expertise', 'email', 'periodical', 'password'];
 
 const propertyDisplayNames: Record<keyof EditorInfoData, string> = {
     user_name: 'Username',
@@ -25,7 +28,8 @@ const propertyDisplayNames: Record<keyof EditorInfoData, string> = {
     institute: 'Institute',
     expertise: 'Expertise',
     email: 'Email',
-    periodical: 'Periodical'
+    periodical: 'Periodical',
+    password: 'Password'
 };
 
 export function EditorInfoPage() {
@@ -34,11 +38,119 @@ export function EditorInfoPage() {
     const [errorMessage, setErrorMessage] = useState('');
     const [profilePhoto, setProfilePhoto] = useState<string>('');
     const [isUploading, setIsUploading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [editMode, setEditMode] = useState<keyof EditorInfoData | null>(null);
+    const [editValue, setEditValue] = useState('');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     useEffect(() => {
         loadEditorInfo();
         loadProfilePhoto();
     }, []);
+
+    useEffect(() => {
+        if (errorMessage) {
+            const timer = setTimeout(() => {
+                setErrorMessage('');
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [errorMessage]);
+
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage('');
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage]);
+
+    const validatePassword = (password: string): string | null => {
+        if (password.length < 8) {
+            return 'Password must be at least 8 characters long';
+        }
+        if (!/\d/.test(password)) {
+            return 'Password must contain at least one number';
+        }
+        if (!/[a-zA-Z]/.test(password)) {
+            return 'Password must contain at least one letter';
+        }
+        if (/[^a-zA-Z0-9]/.test(password)) {
+            return 'Password cannot contain special characters';
+        }
+        return null;
+    };
+
+    const handleEdit = (property: keyof EditorInfoData) => {
+        setEditMode(property);
+        setEditValue(editorInfo[property] || '');
+        if (property === 'password') {
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+        }
+        setErrorMessage('');
+        setSuccessMessage('');
+    };
+
+    const handleCancel = () => {
+        setEditMode(null);
+        setEditValue('');
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+    };
+
+    const handleSave = async () => {
+        if (!editMode) return;
+
+        try {
+            if (editMode === 'password') {
+                if (currentPassword === newPassword) {
+                    setErrorMessage('New password must be different from the current password');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    setErrorMessage('New password and confirm password do not match');
+                    return;
+                }
+
+                const passwordError = validatePassword(newPassword);
+                if (passwordError) {
+                    setErrorMessage(passwordError);
+                    return;
+                }
+
+                const response = await SendPostRequest(new EditPasswordMessage(username, currentPassword, newPassword));
+                if (response.data === 'OK') {
+                    setEditorInfo(prev => ({ ...prev, password: '********' }));
+                    setEditMode(null);
+                    setSuccessMessage('Password updated successfully');
+                    setCurrentPassword('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                } else {
+                    setErrorMessage('Failed to update password. Please check your current password and try again.');
+                }
+            } else {
+                const response = await SendPostRequest(new EditorEditInfoMessage(username, editMode, editValue));
+                if (response.data === 'OK') {
+                    setEditorInfo(prev => ({ ...prev, [editMode]: editValue }));
+                    setEditMode(null);
+                    setSuccessMessage(`${propertyDisplayNames[editMode]} updated successfully`);
+                } else {
+                    setErrorMessage(`Failed to update ${propertyDisplayNames[editMode]}. Please try again.`);
+                }
+            }
+        } catch (error) {
+            console.error(`Error updating ${editMode}:`, error);
+            setErrorMessage(`An error occurred while updating ${propertyDisplayNames[editMode]}. Please try again.`);
+        }
+    };
 
     const loadEditorInfo = async () => {
         try {
@@ -129,6 +241,13 @@ export function EditorInfoPage() {
                     </div>
                 )}
 
+                {successMessage && (
+                    <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded transition-opacity duration-500 ease-in-out" role="alert">
+                        <p className="font-bold">Success</p>
+                        <p>{successMessage}</p>
+                    </div>
+                )}
+
                 <div className="bg-white shadow-xl rounded-lg overflow-hidden">
                     <div className="p-8">
                         <div className="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8 mb-8">
@@ -156,7 +275,67 @@ export function EditorInfoPage() {
                                     <div key={prop} className="flex flex-col sm:flex-row sm:justify-between">
                                         <dt className="text-sm font-medium text-gray-500 mb-1 sm:mb-0">{propertyDisplayNames[prop]}</dt>
                                         <dd className="text-sm text-gray-900 sm:text-right">
-                                            <span>{editorInfo[prop] || 'N/A'}</span>
+                                            {editMode === prop ? (
+                                                <div className="flex items-center justify-end space-x-2">
+                                                    {prop === 'password' ? (
+                                                        <div className="flex flex-col space-y-2 max-w-xs">
+                                                            <input
+                                                                type="password"
+                                                                value={currentPassword}
+                                                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                                                placeholder="Current Password"
+                                                                className="px-2 py-1 border rounded w-full"
+                                                            />
+                                                            <input
+                                                                type="password"
+                                                                value={newPassword}
+                                                                onChange={(e) => setNewPassword(e.target.value)}
+                                                                placeholder="New Password"
+                                                                className="px-2 py-1 border rounded w-full"
+                                                            />
+                                                            <input
+                                                                type="password"
+                                                                value={confirmPassword}
+                                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                                placeholder="Confirm New Password"
+                                                                className="px-2 py-1 border rounded w-full"
+                                                            />
+                                                            <p className="text-xs text-gray-500">
+                                                                Password must be at least 8 characters long,
+                                                                contain at least one number and one letter,
+                                                                and cannot contain special characters.
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <input
+                                                            type="text"
+                                                            value={editValue}
+                                                            onChange={(e) => setEditValue(e.target.value)}
+                                                            className="px-2 py-1 border rounded"
+                                                        />
+                                                    )}
+                                                    <div className="flex flex-col space-y-2">
+                                                        <button onClick={handleSave}
+                                                                className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition duration-150 transform hover:scale-105">Save
+                                                        </button>
+                                                        <button onClick={handleCancel}
+                                                                className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition duration-150 transform hover:scale-105">Cancel
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center justify-end space-x-2">
+                                                    <span>{prop === 'password' ? '********' : editorInfo[prop] || 'N/A'}</span>
+                                                    {['institute', 'expertise', 'email', 'password'].includes(prop) && (
+                                                        <button
+                                                            onClick={() => handleEdit(prop)}
+                                                            className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-150 transform hover:scale-105"
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
                                         </dd>
                                     </div>
                                 ))}
