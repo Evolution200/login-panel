@@ -247,9 +247,9 @@ export function ArticleLogPage() {
                                             </g>
                                         </svg>
                                     </div>
-                                    {/*<div*/}
-                                    {/*    className="mt-2 text-xl text-gray-700 italic">{articleInfo.authors.join(', ')}</div>*/}
-                                </div>
+                                    <div
+                                        className="mt-2 text-xl text-gray-700 italic">{articleInfo.authors.join(', ')}</div>
+                                </div>x
                             </div>
 
                             <div className="text-sm text-gray-600 mt-4">
